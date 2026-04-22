@@ -112,7 +112,7 @@ table{border-collapse:collapse;width:100%}
 .badge-closed{background:var(--color-success-highlight);color:var(--color-success)}
 .badge-open{background:var(--color-notification-highlight);color:var(--color-notification)}
 .badge-excluded{background:var(--color-surface-dynamic);color:var(--color-text-muted)}
-.badge-KSL-4{background:var(--color-error-highlight);color:var(--color-error)}
+.badge-WRI{background:var(--color-error-highlight);color:var(--color-error)}
 .badge-km1{background:var(--color-warning-highlight);color:var(--color-warning)}
 .badge-km2{background:var(--color-gold-highlight);color:var(--color-gold)}
 .badge-pca{background:var(--color-primary-highlight);color:var(--color-primary)}
@@ -244,7 +244,7 @@ table{border-collapse:collapse;width:100%}
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
             <input class="search-input" type="text" placeholder="Search ticket, agent..." id="search-input" oninput="renderTable()">
           </div>
-          <select class="filter-select" id="filter-type" onchange="renderTable()"><option value="">All Types</option><option>KSL-4</option><option>KM-1</option><option>KM-2</option><option>PCa</option><option>PCm</option></select>
+          <select class="filter-select" id="filter-type" onchange="renderTable()"><option value="">All Types</option><option>WRI</option><option>KM-1</option><option>KM-2</option><option>PCa</option><option>PCm</option></select>
           <select class="filter-select" id="filter-status" onchange="renderTable()"><option value="">All Statuses</option><option>Open</option><option>Closed</option><option>Excluded</option></select>
           <select class="filter-select" id="filter-agent" onchange="renderTable()"><option value="">All Agents</option></select>
         </div>
@@ -271,7 +271,7 @@ table{border-collapse:collapse;width:100%}
       <div class="panel">
         <div class="panel-header"><span class="panel-title">Agent Performance — Net Breaches 2026</span></div>
         <div style="overflow-x:auto">
-          <table class="data-table"><thead><tr><th>Agent</th><th>KSL-4</th><th>KM-1</th><th>KM-2</th><th>PCa</th><th>PCm</th><th>TOTAL</th><th>Excluded</th></tr></thead><tbody id="agent-tbody"></tbody></table>
+          <table class="data-table"><thead><tr><th>Agent</th><th>WRI</th><th>KM-1</th><th>KM-2</th><th>PCa</th><th>PCm</th><th>TOTAL</th><th>Excluded</th></tr></thead><tbody id="agent-tbody"></tbody></table>
         </div>
       </div>
     </div>
@@ -301,7 +301,7 @@ table{border-collapse:collapse;width:100%}
       </div>
       <div class="form-row">
         <div class="form-group"><label class="form-label">Agent *</label><select class="form-input" id="f-agent"><option value="">Select agent</option></select></div>
-        <div class="form-group"><label class="form-label">Breach Type *</label><select class="form-input" id="f-type"><option value="">Select type</option><option value="KSL-4">KSL-4 — Wrong Routing</option><option value="KM-1">KM-1 — Reopen</option><option value="KM-2">KM-2 — Response Time</option><option value="PCa">PCa — Priority Change (Auto)</option><option value="PCm">PCm — Priority Change (Manual)</option></select></div>
+        <div class="form-group"><label class="form-label">Breach Type *</label><select class="form-input" id="f-type"><option value="">Select type</option><option value="WRI">WRI — Wrong Routing</option><option value="KM-1">KM-1 — Reopen</option><option value="KM-2">KM-2 — Response Time</option><option value="PCa">PCa — Priority Change (Auto)</option><option value="PCm">PCm — Priority Change (Manual)</option></select></div>
       </div>
       <div class="form-row">
         <div class="form-group"><label class="form-label">Status *</label><select class="form-input" id="f-status"><option value="Open">Open</option><option value="Closed">Closed</option><option value="Excluded">Excluded</option></select></div>
@@ -322,32 +322,32 @@ table{border-collapse:collapse;width:100%}
 </div>
 <script>
 const AGENTS=['Aidaoui','Beltukova','Blani','Grevtseva','Hatsuoka','Karagiannopoulou','Koufos','Levine','Lonis','Marousopoulou','Rakic Moutsidi','Saiz','Sbaiz','Stanisavljevic','Tavallaee','TriesterVina','Tselentis','Tsiatsou','Tsiorbas','Tzelepoglou','Verona','Yoshizawa'];
-const TYPES=['KSL-4','KM-1','KM-2','PCa','PCm'];
+const TYPES=['WRI','KM-1','KM-2','PCa','PCm'];
 let breaches=[
-  {id:1,week:1,ticket:'INC0123456',agent:'Beltukova',type:'KSL-4',dateClosed:'15/01/2026',status:'Closed',excluded:'No',reason:'Customer provided wrong information initially, required re-routing to security team.',jira:'JIRA-001'},
+  {id:1,week:1,ticket:'INC0123456',agent:'Beltukova',type:'WRI',dateClosed:'15/01/2026',status:'Closed',excluded:'No',reason:'Customer provided wrong information initially, required re-routing to security team.',jira:'JIRA-001'},
   {id:2,week:1,ticket:'INC0123457',agent:'Levine',type:'KM-1',dateClosed:'16/01/2026',status:'Excluded',excluded:'Yes',reason:'System outage from 14:00-16:00 CET prevented timely response.',jira:'JIRA-002'},
   {id:3,week:2,ticket:'INC0123458',agent:'Koufos',type:'KM-2',dateClosed:'',status:'Open',excluded:'No',reason:'Waiting for customer response — escalation pending.',jira:''},
   {id:4,week:2,ticket:'INC0123461',agent:'Aidaoui',type:'PCm',dateClosed:'20/01/2026',status:'Closed',excluded:'No',reason:'Agent marked ticket as Low priority instead of High.',jira:'JIRA-003'},
-  {id:5,week:3,ticket:'INC0123475',agent:'Yoshizawa',type:'KSL-4',dateClosed:'22/01/2026',status:'Closed',excluded:'No',reason:'IT ticket routed to HR by mistake during peak volume.',jira:'JIRA-004'},
+  {id:5,week:3,ticket:'INC0123475',agent:'Yoshizawa',type:'WRI',dateClosed:'22/01/2026',status:'Closed',excluded:'No',reason:'IT ticket routed to HR by mistake during peak volume.',jira:'JIRA-004'},
   {id:6,week:3,ticket:'INC0123480',agent:'Tsiatsou',type:'KM-1',dateClosed:'23/01/2026',status:'Closed',excluded:'No',reason:'Customer reopened ticket 5 days after close — original issue not fully resolved.',jira:'JIRA-005'},
   {id:7,week:4,ticket:'INC0123491',agent:'Grevtseva',type:'PCa',dateClosed:'28/01/2026',status:'Closed',excluded:'No',reason:'System auto-escalated priority due to customer escalation trigger.',jira:'JIRA-006'},
   {id:8,week:4,ticket:'INC0123499',agent:'Hatsuoka',type:'KM-2',dateClosed:'30/01/2026',status:'Closed',excluded:'No',reason:'Response delayed 3 hours beyond 1-hour SLA due to agent emergency leave.',jira:'JIRA-007'},
-  {id:9,week:5,ticket:'INC0123510',agent:'Lonis',type:'KSL-4',dateClosed:'04/02/2026',status:'Closed',excluded:'No',reason:'Incorrect queue routing — ticket sent to network team instead of security.',jira:'JIRA-008'},
+  {id:9,week:5,ticket:'INC0123510',agent:'Lonis',type:'WRI',dateClosed:'04/02/2026',status:'Closed',excluded:'No',reason:'Incorrect queue routing — ticket sent to network team instead of security.',jira:'JIRA-008'},
   {id:10,week:5,ticket:'INC0123515',agent:'Saiz',type:'KM-1',dateClosed:'05/02/2026',status:'Closed',excluded:'No',reason:'Customer reopened within 72 hours — VPN issue was only partially fixed.',jira:'JIRA-009'},
   {id:11,week:6,ticket:'INC0123528',agent:'Marousopoulou',type:'PCm',dateClosed:'10/02/2026',status:'Closed',excluded:'No',reason:'Manual priority downgrade was incorrect; supervisor corrected within 2 hours.',jira:'JIRA-010'},
   {id:12,week:6,ticket:'INC0123535',agent:'Blani',type:'KM-2',dateClosed:'11/02/2026',status:'Excluded',excluded:'Yes',reason:'Force majeure — office power outage from 09:00-12:00.',jira:'JIRA-011'},
-  {id:13,week:7,ticket:'INC0123549',agent:'Stanisavljevic',type:'KSL-4',dateClosed:'17/02/2026',status:'Closed',excluded:'No',reason:'New agent misidentified ticket category during training period.',jira:'JIRA-012'},
+  {id:13,week:7,ticket:'INC0123549',agent:'Stanisavljevic',type:'WRI',dateClosed:'17/02/2026',status:'Closed',excluded:'No',reason:'New agent misidentified ticket category during training period.',jira:'JIRA-012'},
   {id:14,week:7,ticket:'INC0123554',agent:'Tavallaee',type:'PCa',dateClosed:'18/02/2026',status:'Closed',excluded:'No',reason:'Auto priority change triggered by customer sentiment score threshold.',jira:'JIRA-013'},
   {id:15,week:8,ticket:'INC0123568',agent:'Tsiorbas',type:'KM-1',dateClosed:'',status:'Open',excluded:'No',reason:'Awaiting QA review of resolution quality.',jira:''},
   {id:16,week:8,ticket:'INC0123571',agent:'Tzelepoglou',type:'KM-2',dateClosed:'25/02/2026',status:'Closed',excluded:'No',reason:'Agent handling 3 concurrent P1 tickets; response exceeded SLA by 45 min.',jira:'JIRA-014'},
-  {id:17,week:9,ticket:'INC0123585',agent:'Verona',type:'KSL-4',dateClosed:'03/03/2026',status:'Closed',excluded:'No',reason:'Ticket misrouted due to ambiguous category label in ServiceNow.',jira:'JIRA-015'},
+  {id:17,week:9,ticket:'INC0123585',agent:'Verona',type:'WRI',dateClosed:'03/03/2026',status:'Closed',excluded:'No',reason:'Ticket misrouted due to ambiguous category label in ServiceNow.',jira:'JIRA-015'},
   {id:18,week:9,ticket:'INC0123590',agent:'Sbaiz',type:'PCm',dateClosed:'04/03/2026',status:'Closed',excluded:'No',reason:'Priority manually changed without supervisor approval.',jira:'JIRA-016'},
   {id:19,week:10,ticket:'INC0123601',agent:'TriesterVina',type:'KM-1',dateClosed:'10/03/2026',status:'Closed',excluded:'No',reason:'Customer reopened after 4 days — related sub-issue was not addressed.',jira:'JIRA-017'},
   {id:20,week:10,ticket:'INC0123608',agent:'Tselentis',type:'KM-2',dateClosed:'11/03/2026',status:'Closed',excluded:'No',reason:'SLA breach of 2 hours due to complex multi-team coordination requirement.',jira:'JIRA-018'},
-  {id:21,week:11,ticket:'INC0123620',agent:'Karagiannopoulou',type:'KSL-4',dateClosed:'17/03/2026',status:'Closed',excluded:'No',reason:'Wrong category selected from dropdown — ticket routing mismatch.',jira:'JIRA-019'},
+  {id:21,week:11,ticket:'INC0123620',agent:'Karagiannopoulou',type:'WRI',dateClosed:'17/03/2026',status:'Closed',excluded:'No',reason:'Wrong category selected from dropdown — ticket routing mismatch.',jira:'JIRA-019'},
   {id:22,week:12,ticket:'INC0123635',agent:'Rakic Moutsidi',type:'PCa',dateClosed:'24/03/2026',status:'Closed',excluded:'No',reason:'Auto-priority escalation not suppressed despite known false-positive trigger.',jira:'JIRA-020'},
   {id:23,week:13,ticket:'INC0123648',agent:'Beltukova',type:'KM-1',dateClosed:'',status:'Open',excluded:'No',reason:'Investigation ongoing — customer dispute about resolution quality.',jira:''},
-  {id:24,week:14,ticket:'INC0123655',agent:'Levine',type:'KSL-4',dateClosed:'07/04/2026',status:'Closed',excluded:'No',reason:'Routing error during high-volume Monday morning queue.',jira:'JIRA-021'},
+  {id:24,week:14,ticket:'INC0123655',agent:'Levine',type:'WRI',dateClosed:'07/04/2026',status:'Closed',excluded:'No',reason:'Routing error during high-volume Monday morning queue.',jira:'JIRA-021'},
   {id:25,week:15,ticket:'INC0123669',agent:'Koufos',type:'KM-2',dateClosed:'14/04/2026',status:'Closed',excluded:'No',reason:'Response time of 2.5 hours exceeded 1-hour SLA due to system slowdown.',jira:'JIRA-022'},
 ];
 let nextId=26,currentPage=1,sortField='week',sortDir=1,activeSection='dashboard';
@@ -398,7 +398,7 @@ function renderRecentTable(){
 function renderTypeBars(){
   const c={};TYPES.forEach(t=>c[t]=0);breaches.filter(b=>b.excluded==='No').forEach(b=>{if(c[b.type]!==undefined)c[b.type]++;});
   const tot=Object.values(c).reduce((a,v)=>a+v,0)||1;
-  const col={KSL-4:'var(--color-error)','KM-1':'var(--color-warning)','KM-2':'var(--color-gold)',PCa:'var(--color-primary)',PCm:'var(--color-text-muted)'};
+  const col={WRI:'var(--color-error)','KM-1':'var(--color-warning)','KM-2':'var(--color-gold)',PCa:'var(--color-primary)',PCm:'var(--color-text-muted)'};
   document.getElementById('type-bars').innerHTML=TYPES.map(t=>{
     const p=Math.round((c[t]/tot)*100);const cl=col[t]||'var(--color-primary)';
     return `<div class="bar-row"><span class="bar-label">${t}</span><div class="bar-track"><div class="bar-fill" style="width:${p}%;background:${cl}"></div></div><span class="bar-count" style="color:${cl}">${c[t]}</span></div>`;
@@ -457,7 +457,7 @@ function renderTrends(){
   document.getElementById('avg-week').textContent=(ns.reduce((a,c)=>a+c,0)/(ns.filter(v=>v>0).length||1)).toFixed(1);
   document.getElementById('weeks-logged').textContent=ns.filter(v=>v>0).length;
 }
-function tb(t){const m={KSL-4:'badge-KSL-4','KM-1':'badge-km1','KM-2':'badge-km2',PCa:'badge-pca',PCm:'badge-pcm'};return `<span class="badge ${m[t]||''}">${t}</span>`;}
+function tb(t){const m={WRI:'badge-WRI','KM-1':'badge-km1','KM-2':'badge-km2',PCa:'badge-pca',PCm:'badge-pcm'};return `<span class="badge ${m[t]||''}">${t}</span>`;}
 function sb(s){const m={Closed:'badge-closed',Open:'badge-open',Excluded:'badge-excluded'};return `<span class="badge ${m[s]||''}">${s}</span>`;}
 function sortBy(f){if(sortField===f)sortDir*=-1;else{sortField=f;sortDir=1;}currentPage=1;renderTable();}
 function changePage(d){currentPage+=d;renderTable();}
