@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Breach Tracker 2026</title>
+<link href="https://api.fontshare.com/v2/css?f[]=satoshi@300,400,500,600,700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://alcdn.msauth.net/browser/2.38.3/js/msal-browser.min.js"></script>
+<style>
+:root{
+  --bg:#f7f6f2;--surface:#f9f8f5;--offset:#f3f0ec;--dynamic:#e6e4df;
+  --divider:#dcd9d5;--border:#d4d1ca;--text:#28251d;--muted:#7a7974;--faint:#bab9b4;
+  --primary:#01696f;--primary-h:#0c4e54;--primary-hl:#cedcd8;
+  --success:#437a22;--success-hl:#d4dfcc;--warn:#964219;--warn-hl:#ddcfc6;
+  --error:#a12c7b;--error-hl:#e0ced7;--notif:#a13544;--notif-hl:#dececb;
+  --gold:#d19900;--gold-hl:#e9e0c6;
+  --sh-sm:0 1px 2px rgba(0,0,0,.06);--sh-md:0 4px 12px rgba(0,0,0,.08);
+  --r-sm:.375rem;--r-md:.5rem;--r-lg:.75rem;--r-xl:1rem;--r-full:9999px;
+  --font:'Satoshi',system-ui,sans-serif;--mono:'JetBrains Mono',monospace;
+  --tx-xs:clamp(.75rem,.7rem + .25vw,.875rem);--tx-sm:clamp(.875rem,.8rem + .35vw,1rem);
+  --tx-base:clamp(1rem,.95rem + .25vw,1.125rem);--tx-xl:clamp(1.5rem,1.2rem + 1.25vw,2.25rem);
+  --s1:.25rem;--s2:.5rem;--s3:.75rem;--s4:1rem;--s5:1.25rem;--s6:1.5rem;--s8:2rem;--s16:4rem;
+  --tr:180ms cubic-bezier(.16,1,.3,1);
+}
+[data-theme="dark"]{
+  --bg:#171614;--surface:#1c1b19;--offset:#1d1c1a;--dynamic:#2d2c2a;
+  --divider:#262523;--border:#393836;--text:#cdccca;--muted:#797876;--faint:#5a5957;
+  --primary:#4f98a3;--primary-h:#227f8b;--primary-hl:#313b3b;
+  --success:#6daa45;--success-hl:#3a4435;--warn:#bb653b;--warn-hl:#564942;
+  --error:#d163a7;--error-hl:#4c3d46;--notif:#dd6974;--notif-hl:#574848;
+  --gold:#e8af34;--gold-hl:#4d4332;
+  --sh-sm:0 1px 2px rgba(0,0,0,.2);--sh-md:0 4px 12px rgba(0,0,0,.3);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-font-smoothing:antialiased}
+body{min-height:100dvh;font-family:var(--font);font-size:var(--tx-sm);color:var(--text);background:var(--bg);display:flex;overflow:hidden}
+button{cursor:pointer;background:none;border:none;font:inherit;color:inherit}
+input,select,textarea{font:inherit;color:inherit}
+table{border-collapse:collapse;width:100%}
+a{color:var(--primary);text-decoration:none}a:hover{text-decoration:underline}
+:focus-visible{outline:2px solid var(--primary);outline-offset:3px;border-radius:var(--r-sm)}
+.sidebar{width:224px;min-width:224px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;height:100dvh;position:sticky;top:0;overflow:hidden}
+.logo-wrap{display:flex;align-items:center;gap:var(--s3);padding:var(--s5) var(--s4);border-bottom:1px solid var(--divider);min-height:64px}
+.logo-mark{width:32px;height:32px;flex-shrink:0}
+.logo-text{font-size:var(--tx-sm);font-weight:700;letter-spacing:-.02em}
+.logo-sub{font-size:var(--tx-xs);color:var(--muted)}
+.nav{flex:1;padding:var(--s3) var(--s2);display:flex;flex-direction:column;gap:2px;overflow-y:auto}
+.nav-label{font-size:.6rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);padding:var(--s4) var(--s3) var(--s1)}
+.nav-item{display:flex;align-items:center;gap:var(--s3);padding:var(--s2) var(--s3);border-radius:var(--r-md);cursor:pointer;transition:background var(--tr),color var(--tr);color:var(--muted);font-size:var(--tx-sm);font-weight:500;border:none;background:none;width:100%;text-align:left}
+.nav-item:hover{background:var(--dynamic);color:var(--text)}
+.nav-item.active{background:var(--primary-hl);color:var(--primary);font-weight:600}
+.nav-item svg{flex-shrink:0;width:15px;height:15px}
+.nav-badge{margin-left:auto;background:var(--notif);color:#fff;font-size:.55rem;font-weight:700;padding:1px 6px;border-radius:var(--r-full);min-width:18px;text-align:center}
+.sidebar-footer{padding:var(--s4);border-top:1px solid var(--divider);display:flex;flex-direction:column;gap:var(--s3)}
+.sf-top{display:flex;align-items:center;gap:var(--s3)}
+.avatar{width:32px;height:32px;border-radius:var(--r-full);background:var(--primary-hl);display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:700;color:var(--primary);flex-shrink:0}
+.avatar-name{font-size:var(--tx-xs);font-weight:600}
+.avatar-role{font-size:.62rem;color:var(--muted)}
+.theme-btn{width:32px;height:32px;border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;background:transparent;color:var(--muted);border:1px solid var(--border);flex-shrink:0}.theme-btn:hover{background:var(--dynamic)}
+.excel-btn{display:flex;align-items:center;justify-content:center;gap:var(--s2);padding:var(--s2) var(--s3);border-radius:var(--r-md);font-size:var(--tx-xs);font-weight:600;border:1px solid var(--border);background:var(--offset);color:var(--muted);cursor:pointer;transition:all var(--tr);width:100%}
+.excel-btn:hover{border-color:var(--primary);color:var(--primary);background:var(--primary-hl)}
+.excel-btn.connected{background:var(--success-hl);color:var(--success);border-color:var(--success)}
+.excel-btn svg{width:14px;height:14px;flex-shrink:0}
+.sync-status{font-size:.6rem;text-align:center;color:var(--faint);margin-top:2px}
+.sync-status.syncing{color:var(--gold)}.sync-status.ok{color:var(--success)}.sync-status.err{color:var(--notif)}
+.main{flex:1;display:flex;flex-direction:column;height:100dvh;overflow:hidden;min-width:0}
+.topbar{height:64px;min-height:64px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:var(--s4);padding:0 var(--s6)}
+.topbar-title{font-size:var(--tx-base);font-weight:700;flex:1;letter-spacing:-.02em}
+.topbar-sub{font-size:var(--tx-xs);color:var(--muted);font-weight:400;margin-left:var(--s2)}
+.topbar-actions{display:flex;align-items:center;gap:var(--s2)}
+.btn{display:inline-flex;align-items:center;gap:var(--s2);padding:var(--s2) var(--s4);border-radius:var(--r-md);font-size:var(--tx-xs);font-weight:600;cursor:pointer;transition:background var(--tr),color var(--tr);border:1px solid transparent;white-space:nowrap}
+.btn-primary{background:var(--primary);color:#fff}.btn-primary:hover{background:var(--primary-h)}
+.btn-ghost{background:transparent;color:var(--muted);border-color:var(--border)}.btn-ghost:hover{background:var(--dynamic);color:var(--text)}
+.btn-danger{background:var(--notif);color:#fff}.btn-danger:hover{opacity:.88}
+.btn svg{width:14px;height:14px}
+.content{flex:1;overflow-y:auto;padding:var(--s6)}
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:var(--s4);margin-bottom:var(--s6)}
+.kpi-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:var(--s4) var(--s5);box-shadow:var(--sh-sm)}
+.kpi-label{font-size:var(--tx-xs);color:var(--muted);font-weight:500;margin-bottom:var(--s2);text-transform:uppercase;letter-spacing:.04em}
+.kpi-value{font-size:var(--tx-xl);font-weight:700;line-height:1;font-variant-numeric:tabular-nums;letter-spacing:-.03em}
+.kpi-delta{font-size:var(--tx-xs);color:var(--muted);margin-top:var(--s1)}
+.kpi-delta.up{color:var(--notif)}.kpi-delta.down{color:var(--success)}
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);box-shadow:var(--sh-sm);margin-bottom:var(--s6);overflow:hidden}
+.panel-header{display:flex;align-items:center;justify-content:space-between;padding:var(--s4) var(--s5);border-bottom:1px solid var(--divider)}
+.panel-title{font-size:var(--tx-sm);font-weight:700;letter-spacing:-.01em}
+.data-table th{padding:var(--s2) var(--s3);text-align:left;font-weight:600;font-size:.6rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);background:var(--offset);border-bottom:1px solid var(--border);white-space:nowrap;cursor:pointer;user-select:none}
+.data-table th:hover{color:var(--text)}
+.data-table td{padding:var(--s3);border-bottom:1px solid var(--divider);vertical-align:middle}
+.data-table tr:last-child td{border-bottom:none}
+.data-table tbody tr:hover{background:var(--offset)}
+.row-excluded td{opacity:.5;text-decoration:line-through}.row-excluded td:last-child,.row-excluded td:first-child{text-decoration:none}
+.ticket-link{font-family:var(--mono);font-size:.6rem;color:var(--primary)}
+.ticket-plain{font-family:var(--mono);font-size:.6rem;color:var(--muted)}
+.reason-cell{max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--muted);font-size:var(--tx-xs)}
+.badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:var(--r-full);font-size:.58rem;font-weight:700;letter-spacing:.03em;white-space:nowrap}
+.b-closed{background:var(--success-hl);color:var(--success)}.b-open{background:var(--notif-hl);color:var(--notif)}.b-excluded{background:var(--dynamic);color:var(--muted)}
+.b-ksl4{background:var(--error-hl);color:var(--error)}.b-km1{background:var(--warn-hl);color:var(--warn)}.b-km2{background:var(--gold-hl);color:var(--gold)}.b-pca{background:var(--primary-hl);color:var(--primary)}.b-pcm{background:var(--dynamic);color:var(--muted)}
+.filters{display:flex;align-items:center;gap:var(--s3);padding:var(--s3) var(--s5);border-bottom:1px solid var(--divider);flex-wrap:wrap}
+.search-wrap{position:relative;flex:1;min-width:180px}
+.search-wrap svg{position:absolute;left:9px;top:50%;transform:translateY(-50%);width:13px;height:13px;color:var(--faint);pointer-events:none}
+.search-input{width:100%;padding:var(--s2) var(--s3) var(--s2) 30px;background:var(--offset);border:1px solid var(--border);border-radius:var(--r-md);font-size:var(--tx-xs);color:var(--text)}
+.search-input:focus{border-color:var(--primary);outline:none}
+.search-input::placeholder{color:var(--faint)}
+.fsel{padding:var(--s2) 26px var(--s2) var(--s3);background:var(--offset);border:1px solid var(--border);border-radius:var(--r-md);font-size:var(--tx-xs);cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='11' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 7px center;color:var(--text)}
+.bulk-bar{display:none;align-items:center;gap:var(--s3);padding:var(--s2) var(--s5);background:var(--primary-hl);border-bottom:1px solid var(--primary);font-size:var(--tx-xs);font-weight:600;color:var(--primary)}
+.bulk-bar.show{display:flex}
+.cb-col{width:36px;text-align:center!important;padding-left:var(--s3)!important}
+input[type=checkbox]{width:15px;height:15px;cursor:pointer;accent-color:var(--primary)}
+.pagination{display:flex;align-items:center;justify-content:space-between;padding:var(--s3) var(--s5);border-top:1px solid var(--divider);font-size:var(--tx-xs);color:var(--muted)}
+.page-btns{display:flex;gap:var(--s2)}
+.page-btn{padding:var(--s1) var(--s3);border-radius:var(--r-md);border:1px solid var(--border);background:var(--offset);color:var(--muted);font-size:var(--tx-xs);cursor:pointer}
+.page-btn:hover:not(:disabled){background:var(--dynamic);color:var(--text)}
+.page-btn:disabled{opacity:.35;cursor:default}
+.breach-bars{padding:var(--s4) var(--s5);display:flex;flex-direction:column;gap:var(--s3)}
+.bar-row{display:grid;grid-template-columns:70px 1fr 40px;align-items:center;gap:var(--s3)}
+.bar-label{font-size:var(--tx-xs);font-weight:600;color:var(--muted)}
+.bar-track{background:var(--dynamic);border-radius:var(--r-full);height:7px;overflow:hidden}
+.bar-fill{height:100%;border-radius:var(--r-full);transition:width .6s cubic-bezier(.16,1,.3,1)}
+.bar-count{font-size:var(--tx-xs);font-weight:700;text-align:right}
+.hc{text-align:center;font-weight:700;border-radius:var(--r-sm);padding:2px var(--s2);font-variant-numeric:tabular-nums;font-size:var(--tx-xs)}
+.h0{background:var(--success-hl);color:var(--success)}.h1{background:var(--gold-hl);color:var(--gold)}.h2{background:var(--warn-hl);color:var(--warn)}.h3{background:var(--notif-hl);color:var(--notif)}.h4{background:var(--error-hl);color:var(--error)}
+.week-chart{display:flex;align-items:flex-end;gap:4px;height:110px;min-width:640px}
+.wbg{display:flex;flex-direction:column;align-items:center;flex:1;gap:2px;cursor:default}
+.wb{width:100%;background:var(--primary);border-radius:var(--r-sm) var(--r-sm) 0 0;min-height:2px;opacity:.65;transition:opacity .2s}
+.wbg:hover .wb{opacity:1}
+.wl{font-size:.48rem;color:var(--faint);margin-top:3px}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;display:flex;align-items:center;justify-content:center;padding:var(--s4);opacity:0;pointer-events:none;transition:opacity var(--tr)}
+.overlay.open{opacity:1;pointer-events:all}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-xl);box-shadow:var(--sh-md);width:100%;max-width:580px;max-height:90dvh;overflow-y:auto;transform:translateY(14px);transition:transform var(--tr)}
+.overlay.open .modal{transform:translateY(0)}
+.modal-hdr{display:flex;align-items:center;justify-content:space-between;padding:var(--s5) var(--s6);border-bottom:1px solid var(--divider);position:sticky;top:0;background:var(--surface)}
+.modal-title{font-size:var(--tx-base);font-weight:700}
+.modal-close{width:30px;height:30px;display:flex;align-items:center;justify-content:center;border-radius:var(--r-md);color:var(--muted)}.modal-close:hover{background:var(--dynamic)}
+.modal-body{padding:var(--s5) var(--s6);display:flex;flex-direction:column;gap:var(--s4)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:var(--s4)}
+.fg{display:flex;flex-direction:column;gap:var(--s2)}.fg.full{grid-column:1/-1}
+.flabel{font-size:var(--tx-xs);font-weight:600;color:var(--muted);letter-spacing:.03em}
+.fi{padding:var(--s2) var(--s3);background:var(--offset);border:1px solid var(--border);border-radius:var(--r-md);font-size:var(--tx-xs);color:var(--text)}.fi:focus{border-color:var(--primary);outline:none}
+.fta{resize:vertical;min-height:76px}
+.modal-ftr{display:flex;justify-content:flex-end;gap:var(--s2);padding:var(--s4) var(--s6) var(--s5);border-top:1px solid var(--divider)}
+.ferr{color:var(--notif);font-size:var(--tx-xs);display:none}
+.hint{font-size:.62rem;color:var(--faint);margin-top:2px}
+.setup-section{background:var(--offset);border:1px solid var(--border);border-radius:var(--r-lg);padding:var(--s4);display:flex;flex-direction:column;gap:var(--s3)}
+.setup-step{display:flex;align-items:flex-start;gap:var(--s3)}
+.step-num{width:22px;height:22px;border-radius:var(--r-full);background:var(--primary);color:#fff;font-size:.65rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.step-text{font-size:var(--tx-xs);color:var(--muted);line-height:1.6}
+.step-text strong{color:var(--text)}
+.code-block{font-family:var(--mono);font-size:.62rem;background:var(--dynamic);padding:2px 6px;border-radius:var(--r-sm);color:var(--primary)}
+.pg{display:none}.pg.active{display:block}
+.empty-state{display:flex;flex-direction:column;align-items:center;text-align:center;padding:var(--s16) var(--s8);color:var(--muted)}
+.empty-state svg{width:36px;height:36px;color:var(--faint);margin-bottom:var(--s4)}
+.agent-name{font-weight:600;font-size:var(--tx-xs);white-space:nowrap}
+.jira-card{display:flex;align-items:center;justify-content:space-between;padding:var(--s3) var(--s5);border-bottom:1px solid var(--divider);gap:var(--s4)}
+.jira-card:last-child{border-bottom:none}
+.jira-card:hover{background:var(--offset)}
+.jira-id{font-family:var(--mono);font-size:var(--tx-xs);font-weight:600;color:var(--primary);min-width:100px}
+.jira-meta{flex:1;font-size:var(--tx-xs);color:var(--muted)}
+.conn-pill{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:var(--r-full);font-size:.6rem;font-weight:600;border:1px solid var(--border);color:var(--muted);background:var(--offset)}
+.conn-pill.connected{border-color:var(--success);color:var(--success);background:var(--success-hl)}
+.conn-pill.syncing{border-color:var(--gold);color:var(--gold);background:var(--gold-hl)}
+.conn-dot{width:6px;height:6px;border-radius:50%;background:currentColor}
+</style>
+</head>
+<body>
+<aside class="sidebar">
+  <div class="logo-wrap">
+    <svg class="logo-mark" viewBox="0 0 32 32" fill="none">
+      <rect width="32" height="32" rx="8" fill="var(--primary)"/>
+      <path d="M9 10h9a4 4 0 0 1 0 8H9V10Z" fill="none" stroke="white" stroke-width="2" stroke-linejoin="round"/>
+      <path d="M9 18h10a4 4 0 0 1 0 8H9V18Z" fill="none" stroke="white" stroke-width="2" stroke-linejoin="round" opacity=".55"/>
+    </svg>
+    <div><div class="logo-text">BreachTrack</div><div class="logo-sub">SLA Monitor 2026</div></div>
+  </div>
+  <nav class="nav">
+    <div class="nav-label">Overview</div>
+    <button class="nav-item active" onclick="go('dashboard',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Dashboard
+    </button>
+    <button class="nav-item" onclick="go('log',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>Breach Log
+      <span class="nav-badge" id="open-badge" style="display:none"></span>
+    </button>
+    <button class="nav-item" onclick="go('jira',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>Jira Tickets
+      <span class="nav-badge" id="jira-badge" style="display:none"></span>
+    </button>
+    <div class="nav-label">By Type</div>
+    <button class="nav-item" onclick="go('t-ksl4',this)"><span class="badge b-ksl4" style="font-size:.5rem;padding:1px 5px">KSL-4</span>KSL-4 Breaches</button>
+    <button class="nav-item" onclick="go('t-km1',this)"><span class="badge b-km1" style="font-size:.5rem;padding:1px 5px">KM-1</span>KM-1 Breaches</button>
+    <button class="nav-item" onclick="go('t-km2',this)"><span class="badge b-km2" style="font-size:.5rem;padding:1px 5px">KM-2</span>KM-2 Breaches</button>
+    <button class="nav-item" onclick="go('t-pca',this)"><span class="badge b-pca" style="font-size:.5rem;padding:1px 5px">PCa</span>PCa Breaches</button>
+    <button class="nav-item" onclick="go('t-pcm',this)"><span class="badge b-pcm" style="font-size:.5rem;padding:1px 5px">PCm</span>PCm Breaches</button>
+    <div class="nav-label">Analysis</div>
+    <button class="nav-item" onclick="go('agents',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Agent Summary
+    </button>
+    <button class="nav-item" onclick="go('trends',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Weekly Trends
+    </button>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="sf-top">
+      <div class="avatar">TR</div>
+      <div style="flex:1;min-width:0">
+        <div class="avatar-name" id="user-name">Team Reviewer</div>
+        <div class="avatar-role" id="user-email"></div>
+      </div>
+      <button class="theme-btn" id="theme-toggle"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></button>
+    </div>
+    <button class="excel-btn" id="excel-btn" onclick="handleExcelConnect()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+      <span id="excel-btn-text">Connect to Excel</span>
+    </button>
+    <div class="sync-status" id="sync-status">Not connected — data in browser only</div>
+  </div>
+</aside>
+
+<div class="main">
+  <header class="topbar">
+    <div class="topbar-title"><span id="page-title">Dashboard</span><span class="topbar-sub">2026</span></div>
+    <div class="topbar-actions">
+      <span class="conn-pill" id="conn-pill"><span class="conn-dot"></span><span id="conn-text">Offline</span></span>
+      <button class="btn btn-ghost" onclick="exportCSV()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Export CSV
+      </button>
+      <button class="btn btn-primary" onclick="openModal()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Log Breach
+      </button>
+    </div>
+  </header>
+  <div class="content">
+    <div id="pg-dashboard" class="pg active">
+      <div class="kpi-grid" id="kpi-grid"></div>
+      <div style="display:grid;grid-template-columns:1fr 300px;gap:var(--s6)">
+        <div class="panel">
+          <div class="panel-header"><span class="panel-title">Recent Breaches</span><button class="btn btn-ghost" onclick="go('log',document.querySelectorAll('.nav-item')[1])">View all</button></div>
+          <div style="overflow-x:auto"><table class="data-table"><thead><tr><th>Ticket</th><th>Agent</th><th>Type</th><th>Status</th><th>Week</th></tr></thead><tbody id="recent-tbody"></tbody></table></div>
+        </div>
+        <div class="panel">
+          <div class="panel-header"><span class="panel-title">By Type</span></div>
+          <div class="breach-bars" id="type-bars"></div>
+        </div>
+      </div>
+    </div>
+    <div id="pg-log" class="pg">
+      <div class="panel">
+        <div class="panel-header"><span class="panel-title">Breach Log</span><span id="row-count" style="font-size:var(--tx-xs);color:var(--muted)"></span></div>
+        <div class="bulk-bar" id="bulk-bar">
+          <span style="flex:1"><span id="bulk-num">0</span> selected</span>
+          <button class="btn btn-ghost" onclick="clearSel()">Deselect All</button>
+          <button class="btn btn-danger" onclick="bulkDel()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>Remove Selected</button>
+        </div>
+        <div class="filters">
+          <div class="search-wrap">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input class="search-input" type="text" placeholder="Search ticket, agent, reason..." id="s-search" oninput="renderLog()">
+          </div>
+          <select class="fsel" id="s-type" onchange="renderLog()"><option value="">All Types</option><option>KSL-4</option><option>KM-1</option><option>KM-2</option><option>PCa</option><option>PCm</option></select>
+          <select class="fsel" id="s-status" onchange="renderLog()"><option value="">All Statuses</option><option>Open</option><option>Closed</option><option>Excluded</option></select>
+          <select class="fsel" id="s-agent" onchange="renderLog()"><option value="">All Agents</option></select>
+        </div>
+        <div style="overflow-x:auto">
+          <table class="data-table">
+            <thead><tr>
+              <th class="cb-col"><input type="checkbox" id="sel-all" onclick="toggleAll(this)"></th>
+              <th onclick="srt('week')">Wk</th><th onclick="srt('ticket')">Ticket</th><th onclick="srt('agent')">Agent</th>
+              <th onclick="srt('type')">Type</th><th onclick="srt('dateClosed')">Closed</th>
+              <th onclick="srt('status')">Status</th><th>Excl</th><th>Reason</th><th onclick="srt('jira')">Jira</th><th>Action</th>
+            </tr></thead>
+            <tbody id="log-tbody"></tbody>
+          </table>
+        </div>
+        <div class="pagination">
+          <span id="pg-info"></span>
+          <div class="page-btns">
+            <button class="page-btn" id="btn-prev" onclick="chPg(-1)">← Prev</button>
+            <button class="page-btn" id="btn-next" onclick="chPg(1)">Next →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="pg-jira" class="pg">
+      <div class="panel">
+        <div class="panel-header"><span class="panel-title">Jira Tickets Submitted</span><span id="jira-count" style="font-size:var(--tx-xs);color:var(--muted)"></span></div>
+        <div class="filters">
+          <div class="search-wrap">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input class="search-input" type="text" placeholder="Search Jira ID, ticket, agent..." id="jira-search" oninput="renderJira()">
+          </div>
+          <select class="fsel" id="jira-type" onchange="renderJira()"><option value="">All Types</option><option>KSL-4</option><option>KM-1</option><option>KM-2</option><option>PCa</option><option>PCm</option></select>
+        </div>
+        <div id="jira-list"></div>
+      </div>
+    </div>
+    <div id="pg-t-ksl4" class="pg"></div>
+    <div id="pg-t-km1" class="pg"></div>
+    <div id="pg-t-km2" class="pg"></div>
+    <div id="pg-t-pca" class="pg"></div>
+    <div id="pg-t-pcm" class="pg"></div>
+    <div id="pg-agents" class="pg">
+      <div class="panel">
+        <div class="panel-header"><span class="panel-title">Agent Summary — Net Breaches 2026</span></div>
+        <div style="overflow-x:auto"><table class="data-table"><thead><tr><th>Agent</th><th>KSL-4</th><th>KM-1</th><th>KM-2</th><th>PCa</th><th>PCm</th><th>Total</th><th>Excl</th></tr></thead><tbody id="agent-tbody"></tbody></table></div>
+      </div>
+    </div>
+    <div id="pg-trends" class="pg">
+      <div class="panel">
+        <div class="panel-header"><span class="panel-title">Weekly Breach Trend — 2026</span></div>
+        <div style="padding:var(--s5);overflow-x:auto"><div class="week-chart" id="week-chart"></div></div>
+        <div style="display:flex;gap:var(--s6);padding:var(--s4) var(--s5);border-top:1px solid var(--divider)">
+          <div><div class="kpi-label" style="font-size:var(--tx-xs);color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:var(--s1)">Peak Week</div><div style="font-weight:700" id="peak-wk">—</div></div>
+          <div><div class="kpi-label" style="font-size:var(--tx-xs);color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:var(--s1)">Avg / Week</div><div style="font-weight:700" id="avg-wk">—</div></div>
+          <div><div class="kpi-label" style="font-size:var(--tx-xs);color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:var(--s1)">Weeks Logged</div><div style="font-weight:700" id="wks-logged">—</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Log Breach Modal -->
+<div class="overlay" id="overlay" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <div class="modal-hdr"><span class="modal-title">Log New Breach</span><button class="modal-close" onclick="closeModal()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="fg"><label class="flabel">Week *</label><select class="fi" id="f-week"><option value="">Select week</option></select></div>
+        <div class="fg"><label class="flabel">Incident Ticket *</label><input class="fi" type="text" id="f-ticket" placeholder="INC0000000"><div class="hint">Format: INC + 7 digits</div></div>
+      </div>
+      <div class="form-row">
+        <div class="fg"><label class="flabel">Ticket URL (optional)</label><input class="fi" type="text" id="f-url" placeholder="https://...servicenow.../INC0000000"></div>
+        <div class="fg"><label class="flabel">Agent *</label><select class="fi" id="f-agent"><option value="">Select agent</option></select></div>
+      </div>
+      <div class="form-row">
+        <div class="fg"><label class="flabel">Breach Type *</label>
+          <select class="fi" id="f-type"><option value="">Select type</option>
+            <option value="KSL-4">KSL-4 — Wrong Routing</option>
+            <option value="KM-1">KM-1 — Reopen</option>
+            <option value="KM-2">KM-2 — Response Time</option>
+            <option value="PCa">PCa — Priority Change (Auto)</option>
+            <option value="PCm">PCm — Priority Change (Manual)</option>
+          </select>
+        </div>
+        <div class="fg"><label class="flabel">Status *</label><select class="fi" id="f-status"><option value="Open">Open</option><option value="Closed">Closed</option><option value="Excluded">Excluded</option></select></div>
+      </div>
+      <div class="form-row">
+        <div class="fg"><label class="flabel">Date Closed</label><input class="fi" type="date" id="f-date"></div>
+        <div class="fg"><label class="flabel">Excluded?</label><select class="fi" id="f-excluded"><option value="No">No</option><option value="Yes">Yes</option></select></div>
+      </div>
+      <div class="fg full"><label class="flabel">Jira Ticket (optional)</label><input class="fi" type="text" id="f-jira" placeholder="JIRA-12345"><div class="hint">Will appear in the Jira Tickets page</div></div>
+      <div class="fg full"><label class="flabel">Reason for Breach *</label><textarea class="fi fta" id="f-reason" placeholder="Describe why the breach occurred..." maxlength="500"></textarea></div>
+      <div id="f-err" class="ferr"></div>
+    </div>
+    <div class="modal-ftr"><button class="btn btn-ghost" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="submitBreach()">Log Breach</button></div>
+  </div>
+</div>
+
+<!-- Excel Setup Modal -->
+<div class="overlay" id="setup-overlay" onclick="if(event.target===this)closeSetup()">
+  <div class="modal">
+    <div class="modal-hdr"><span class="modal-title">Connect to Excel on OneDrive</span><button class="modal-close" onclick="closeSetup()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+    <div class="modal-body">
+      <div class="setup-section">
+        <div style="font-size:var(--tx-xs);font-weight:700;margin-bottom:var(--s1)">One-time setup required</div>
+        <div class="setup-step"><div class="step-num">1</div><div class="step-text"><strong>Register a free Azure App</strong> — go to <a href="https://portal.azure.com" target="_blank">portal.azure.com</a> → Azure Active Directory → App Registrations → New Registration. Set redirect URI type to <strong>Single Page Application (SPA)</strong> and enter your app URL.</div></div>
+        <div class="setup-step"><div class="step-num">2</div><div class="step-text"><strong>Copy your Application (Client) ID</strong> from the app overview page and paste it below.</div></div>
+        <div class="setup-step"><div class="step-num">3</div><div class="step-text"><strong>Upload Breaches2026.xlsx to OneDrive root.</strong> The file must have a table named <span class="code-block">BreachTable</span> on a sheet named <span class="code-block">Breaches</span>.</div></div>
+        <div class="setup-step"><div class="step-num">4</div><div class="step-text"><strong>Enter your Client ID below</strong> and click Save & Connect. A Microsoft login popup will appear. After login the app syncs automatically.</div></div>
+      </div>
+      <div class="fg"><label class="flabel">Azure App Client ID *</label><input class="fi" type="text" id="client-id-input" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"><div class="hint">Azure Portal → App Registrations → your app → Application (client) ID</div></div>
+      <div class="fg"><label class="flabel">Excel File Name on OneDrive</label><input class="fi" type="text" id="file-name-input" value="Breaches2026.xlsx"></div>
+      <div class="fg"><label class="flabel">Table Name</label><input class="fi" type="text" id="table-name-input" value="BreachTable"></div>
+      <div id="setup-err" class="ferr"></div>
+    </div>
+    <div class="modal-ftr"><button class="btn btn-ghost" onclick="closeSetup()">Cancel</button><button class="btn btn-primary" onclick="saveSetupAndConnect()">Save & Connect</button></div>
+  </div>
+</div>
+
+<script>
+var AGENTS=['Beltukova','Blani','Grevtseva','Hatsuoka','Karagiannopoulou','Koufos','Levine','Lonis','Marousopoulou','Rakic Moutsidi','Saiz','Sbaiz','Stanisavljevic','Tavallaee','TriesterVina','Tselentis','Tsiatsou','Tsiorbas','Tzelepoglou','Yoshizawa','Not Agent Related'];
+var TYPES=['KSL-4','KM-1','KM-2','PCa','PCm'];
+var TYPE_PAGE={'t-ksl4':'KSL-4','t-km1':'KM-1','t-km2':'KM-2','t-pca':'PCa','t-pcm':'PCm'};
+var PAGE_TITLES={dashboard:'Dashboard',log:'Breach Log',jira:'Jira Tickets',agents:'Agent Summary',trends:'Weekly Trends','t-ksl4':'KSL-4 Breaches','t-km1':'KM-1 Breaches','t-km2':'KM-2 Breaches','t-pca':'PCa Breaches','t-pcm':'PCm Breaches'};
+var breaches=[],nextId=1,curPage=1,sortF='week',sortD=1,PER_PAGE=10;
+var msalInstance=null,graphToken=null,excelFileId=null,excelConnected=false;
+var clientId=localStorage.getItem('bt_client_id')||'';
+var fileName=localStorage.getItem('bt_file_name')||'Breaches2026.xlsx';
+var tableName=localStorage.getItem('bt_table_name')||'BreachTable';
+var SCOPES=['Files.ReadWrite','User.Read'];
+
+function init(){
+  var ws=document.getElementById('f-week');
+  for(var w=1;w<=52;w++) ws.innerHTML+='<option value="'+w+'">Week '+w+'</option>';
+  var ag=document.getElementById('f-agent');
+  AGENTS.forEach(function(a){ ag.innerHTML+='<option value="'+a+'">'+a+'</option>'; });
+  var af=document.getElementById('s-agent');
+  AGENTS.forEach(function(a){ af.innerHTML+='<option value="'+a+'">'+a+'</option>'; });
+  renderAll(); initTheme();
+  if(clientId){ initMsal(clientId); tryAutoConnect(); }
+}
+
+function initMsal(cid){
+  msalInstance=new msal.PublicClientApplication({auth:{clientId:cid,authority:'https://login.microsoftonline.com/common',redirectUri:window.location.href.split('?')[0].split('#')[0]},cache:{cacheLocation:'localStorage',storeAuthStateInCookie:false}});
+}
+async function tryAutoConnect(){
+  if(!msalInstance)return;
+  try{ var acc=msalInstance.getAllAccounts(); if(acc.length>0){ var r=await msalInstance.acquireTokenSilent({scopes:SCOPES,account:acc[0]});graphToken=r.accessToken;onConnected(acc[0]); } }catch(e){}
+}
+function handleExcelConnect(){ if(excelConnected){disconnectExcel();return;} if(!clientId){openSetup();return;} connectExcel(); }
+async function connectExcel(){
+  if(!msalInstance)initMsal(clientId);
+  setSyncStatus('syncing','Connecting to Microsoft...');
+  try{ var r=await msalInstance.loginPopup({scopes:SCOPES});graphToken=r.accessToken;onConnected(r.account);await loadFromExcel(); }
+  catch(e){ setSyncStatus('err','Connection failed: '+e.message); }
+}
+function onConnected(acc){
+  excelConnected=true;
+  document.getElementById('excel-btn').classList.add('connected');
+  document.getElementById('excel-btn-text').textContent='Disconnect Excel';
+  document.getElementById('user-name').textContent=acc.name||'Team Reviewer';
+  document.getElementById('user-email').textContent=acc.username||'';
+  document.getElementById('conn-pill').classList.add('connected');
+  document.getElementById('conn-text').textContent='Excel Connected';
+  setSyncStatus('ok','Connected — syncing with OneDrive');
+}
+function disconnectExcel(){
+  if(!confirm('Disconnect from Excel?'))return;
+  excelConnected=false;graphToken=null;excelFileId=null;
+  document.getElementById('excel-btn').classList.remove('connected');
+  document.getElementById('excel-btn-text').textContent='Connect to Excel';
+  document.getElementById('conn-pill').classList.remove('connected');
+  document.getElementById('conn-text').textContent='Offline';
+  document.getElementById('user-email').textContent='';
+  setSyncStatus('','Not connected — data in browser only');
+}
+async function graphGet(url){ var r=await fetch('https://graph.microsoft.com/v1.0'+url,{headers:{Authorization:'Bearer '+graphToken}});if(!r.ok)throw new Error('Graph GET '+r.status);return r.json(); }
+async function graphPost(url,body){ var r=await fetch('https://graph.microsoft.com/v1.0'+url,{method:'POST',headers:{Authorization:'Bearer '+graphToken,'Content-Type':'application/json'},body:JSON.stringify(body)});if(!r.ok){var t=await r.text();throw new Error('Graph POST '+r.status+' '+t);}return r.json(); }
+async function getFileId(){
+  if(excelFileId)return excelFileId;
+  var r=await graphGet('/me/drive/root/children?$select=id,name');
+  var f=r.value.find(function(f){ return f.name===fileName; });
+  if(!f)throw new Error('File "'+fileName+'" not found in OneDrive root.');
+  excelFileId=f.id;return excelFileId;
+}
+async function loadFromExcel(){
+  setSyncStatus('syncing','Loading from Excel...');
+  try{
+    var fid=await getFileId();
+    var r=await graphGet('/me/drive/items/'+fid+'/workbook/tables/'+tableName+'/rows');
+    breaches=[];
+    r.value.forEach(function(row,i){ var v=row.values[0];if(!v[1])return;breaches.push({id:i+1,week:+v[0]||1,ticket:v[1]||'',url:v[2]||'',agent:v[3]||'',type:v[4]||'',dateClosed:v[5]||'',status:v[6]||'Open',excluded:v[7]||'No',reason:v[8]||'',jira:v[9]||''}); });
+    nextId=breaches.length+1;renderAll();setSyncStatus('ok','Loaded '+breaches.length+' breaches ✓');
+  }catch(e){ setSyncStatus('err','Load failed: '+e.message); }
+}
+async function appendToExcel(b){
+  if(!excelConnected||!graphToken)return;
+  setSyncStatus('syncing','Saving to Excel...');
+  try{ var fid=await getFileId();await graphPost('/me/drive/items/'+fid+'/workbook/tables/'+tableName+'/rows/add',{values:[[b.week,b.ticket,b.url||'',b.agent,b.type,b.dateClosed,b.status,b.excluded,b.reason,b.jira||'']]});setSyncStatus('ok','Saved to Excel ✓'); }
+  catch(e){ setSyncStatus('err','Save failed: '+e.message); }
+}
+function openSetup(){ document.getElementById('client-id-input').value=clientId;document.getElementById('file-name-input').value=fileName;document.getElementById('table-name-input').value=tableName;document.getElementById('setup-overlay').classList.add('open'); }
+function closeSetup(){ document.getElementById('setup-overlay').classList.remove('open'); }
+function saveSetupAndConnect(){
+  var cid=document.getElementById('client-id-input').value.trim();
+  var fn=document.getElementById('file-name-input').value.trim()||'Breaches2026.xlsx';
+  var tn=document.getElementById('table-name-input').value.trim()||'BreachTable';
+  if(!cid){ document.getElementById('setup-err').textContent='Client ID is required.';document.getElementById('setup-err').style.display='block';return; }
+  clientId=cid;fileName=fn;tableName=tn;
+  localStorage.setItem('bt_client_id',cid);localStorage.setItem('bt_file_name',fn);localStorage.setItem('bt_table_name',tn);
+  closeSetup();initMsal(cid);connectExcel();
+}
+function setSyncStatus(type,msg){ var el=document.getElementById('sync-status');el.textContent=msg;el.className='sync-status'+(type?' '+type:''); }
+
+function go(section,btn){
+  document.querySelectorAll('.pg').forEach(function(e){ e.classList.remove('active'); });
+  document.querySelectorAll('.nav-item').forEach(function(e){ e.classList.remove('active'); });
+  var pg=document.getElementById('pg-'+section);if(!pg)return;
+  pg.classList.add('active');if(btn)btn.classList.add('active');
+  document.getElementById('page-title').textContent=PAGE_TITLES[section]||section;
+  if(TYPE_PAGE[section])renderTypePage(section,TYPE_PAGE[section]);
+  else if(section==='log'){curPage=1;renderLog();}
+  else if(section==='agents')renderAgents();
+  else if(section==='trends')renderTrends();
+  else if(section==='jira')renderJira();
+  else renderDash();
+  updateBadge();
+}
+function renderAll(){ renderDash();updateBadge(); }
+function renderDash(){
+  var net=breaches.filter(function(b){ return b.excluded==='No'; }).length;
+  var excl=breaches.filter(function(b){ return b.excluded==='Yes'; }).length;
+  var open=breaches.filter(function(b){ return b.status==='Open'; }).length;
+  var aa=AGENTS.filter(function(a){ return a!=='Not Agent Related'; });
+  var avg=aa.length?(net/aa.length).toFixed(1):'0.0';
+  var weeks=[...new Set(breaches.map(function(b){ return b.week; }))];
+  var wc=weeks.map(function(w){ return breaches.filter(function(b){ return b.week===w&&b.excluded==='No'; }).length; });
+  var maxW=wc.length?weeks[wc.indexOf(Math.max.apply(null,wc))]:'—';
+  var jc=breaches.filter(function(b){ return b.jira&&b.jira.trim(); }).length;
+  document.getElementById('kpi-grid').innerHTML=[
+    {l:'Total Breaches',v:net,d:'Net (excl. excluded)',c:''},
+    {l:'Excluded',v:excl,d:'Not counted in SLA',c:'down'},
+    {l:'Open Investigations',v:open,d:open>0?'Needs attention':'All clear',c:open>0?'up':'down'},
+    {l:'Avg per Agent',v:avg,d:'Across '+aa.length+' agents',c:''},
+    {l:'Peak Week',v:maxW==='—'?'—':'W'+maxW,d:wc.length?Math.max.apply(null,wc)+' breaches':'No data yet',c:''},
+    {l:'Jira Tickets',v:jc,d:'Total submitted',c:''},
+  ].map(function(k){ return '<div class="kpi-card"><div class="kpi-label">'+k.l+'</div><div class="kpi-value">'+k.v+'</div><div class="kpi-delta '+k.c+'">'+k.d+'</div></div>'; }).join('');
+  var rec=[].concat(breaches).sort(function(a,b){ return b.id-a.id; }).slice(0,8);
+  document.getElementById('recent-tbody').innerHTML=rec.length?rec.map(function(b){ return '<tr class="'+(b.excluded==='Yes'?'row-excluded':'')+'"><td>'+renderTicket(b)+'</td><td>'+b.agent+'</td><td>'+tb(b.type)+'</td><td>'+sb(b.status)+'</td><td style="color:var(--muted)">W'+b.week+'</td></tr>'; }).join(''):'<tr><td colspan="5"><div class="empty-state" style="padding:var(--s8)"><p>No breaches yet.</p></div></td></tr>';
+  var c={};TYPES.forEach(function(t){ c[t]=0; });
+  breaches.filter(function(b){ return b.excluded==='No'; }).forEach(function(b){ if(c[b.type]!==undefined)c[b.type]++; });
+  var tot=Object.values(c).reduce(function(a,v){ return a+v; },0)||1;
+  var col={'KSL-4':'var(--error)','KM-1':'var(--warn)','KM-2':'var(--gold)',PCa:'var(--primary)',PCm:'var(--muted)'};
+  document.getElementById('type-bars').innerHTML=TYPES.map(function(t){ var p=Math.round((c[t]/tot)*100);return '<div class="bar-row"><span class="bar-label">'+t+'</span><div class="bar-track"><div class="bar-fill" style="width:'+p+'%;background:'+col[t]+'"></div></div><span class="bar-count" style="color:'+col[t]+'">'+c[t]+'</span></div>'; }).join('');
+}
+function updateBadge(){
+  var o=breaches.filter(function(b){ return b.status==='Open'; }).length;
+  var ob=document.getElementById('open-badge');ob.textContent=o;ob.style.display=o>0?'':'none';
+  var j=breaches.filter(function(b){ return b.jira&&b.jira.trim(); }).length;
+  var jb=document.getElementById('jira-badge');jb.textContent=j;jb.style.display=j>0?'':'none';
+}
+function renderTicket(b){ if(b.url&&b.url.trim())return '<a class="ticket-link" href="'+b.url+'" target="_blank" rel="noopener">'+b.ticket+' ↗</a>';return '<span class="ticket-plain">'+b.ticket+'</span>'; }
+function renderLog(){
+  var q=document.getElementById('s-search').value.toLowerCase();
+  var ft=document.getElementById('s-type').value,fs=document.getElementById('s-status').value,fa=document.getElementById('s-agent').value;
+  var f=breaches.filter(function(b){ return (!q||b.ticket.toLowerCase().includes(q)||b.agent.toLowerCase().includes(q)||b.reason.toLowerCase().includes(q)||b.jira.toLowerCase().includes(q))&&(!ft||b.type===ft)&&(!fs||b.status===fs)&&(!fa||b.agent===fa); });
+  f.sort(function(a,b){ var va=sortF==='week'?+a.week:(a[sortF]||'');var vb=sortF==='week'?+b.week:(b[sortF]||'');return va<vb?-sortD:va>vb?sortD:0; });
+  var tot=f.length,start=(curPage-1)*PER_PAGE,pg=f.slice(start,start+PER_PAGE);
+  document.getElementById('row-count').textContent=tot+' breach'+(tot!==1?'es':'');
+  document.getElementById('pg-info').textContent=tot?'Showing '+(start+1)+'–'+Math.min(start+PER_PAGE,tot)+' of '+tot:'No results';
+  document.getElementById('btn-prev').disabled=curPage===1;
+  document.getElementById('btn-next').disabled=start+PER_PAGE>=tot;
+  if(!pg.length){ document.getElementById('log-tbody').innerHTML='<tr><td colspan="11"><div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="8" y1="12" x2="16" y2="12"/></svg><h3 style="margin-bottom:var(--s2)">No breaches found</h3><p>Try adjusting filters or log a new breach.</p></div></td></tr>';return; }
+  document.getElementById('log-tbody').innerHTML=pg.map(function(b){ var jh=b.jira&&b.jira.trim()?'<span style="font-family:var(--mono);font-size:.6rem;color:var(--primary)">'+b.jira+'</span>':'<span style="color:var(--faint)">—</span>';return '<tr class="'+(b.excluded==='Yes'?'row-excluded':'')+'">'+'<td class="cb-col"><input type="checkbox" class="row-cb" value="'+b.id+'" onchange="updBulk()"></td>'+'<td style="color:var(--muted)">W'+b.week+'</td>'+'<td>'+renderTicket(b)+'</td>'+'<td>'+b.agent+'</td>'+'<td>'+tb(b.type)+'</td>'+'<td style="color:var(--muted)">'+(b.dateClosed||'—')+'</td>'+'<td>'+sb(b.status)+'</td>'+'<td style="text-align:center">'+(b.excluded==='Yes'?'<span style="color:var(--notif);font-weight:700">Y</span>':'<span style="color:var(--faint)">N</span>')+'</td>'+'<td><span class="reason-cell" title="'+b.reason.replace(/"/g,"'")+'">'+b.reason+'</span></td>'+'<td>'+jh+'</td>'+'<td><button class="btn btn-ghost" style="padding:2px 8px;font-size:.58rem" onclick="del('+b.id+')">Remove</button></td>'+'</tr>'; }).join('');
+}
+function renderJira(){
+  var q=document.getElementById('jira-search').value.toLowerCase(),ft=document.getElementById('jira-type').value;
+  var f=breaches.filter(function(b){ return b.jira&&b.jira.trim()&&(!ft||b.type===ft)&&(!q||b.jira.toLowerCase().includes(q)||b.ticket.toLowerCase().includes(q)||b.agent.toLowerCase().includes(q)); });
+  document.getElementById('jira-count').textContent=f.length+' ticket'+(f.length!==1?'s':'');
+  document.getElementById('jira-list').innerHTML=f.length?f.map(function(b){ return '<div class="jira-card"><span class="jira-id">'+b.jira+'</span><div class="jira-meta"><div style="margin-bottom:2px">'+renderTicket(b)+' &nbsp;·&nbsp; <strong>'+b.agent+'</strong> &nbsp;·&nbsp; W'+b.week+'</div><div style="color:var(--faint)">'+b.reason.substring(0,80)+(b.reason.length>80?'…':'')+'</div></div><div style="display:flex;align-items:center;gap:var(--s3)">'+tb(b.type)+sb(b.status)+'</div></div>'; }).join(''):'<div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg><h3 style="margin-bottom:var(--s2)">No Jira tickets yet</h3></div>';
+}
+function renderTypePage(pageId,type){
+  var f=breaches.filter(function(b){ return b.type===type; });
+  var net=f.filter(function(b){ return b.excluded==='No'; }).length;
+  var open=f.filter(function(b){ return b.status==='Open'; }).length;
+  var excl=f.filter(function(b){ return b.excluded==='Yes'; }).length;
+  var rows=f.length?f.map(function(b){ return '<tr class="'+(b.excluded==='Yes'?'row-excluded':'')+'">'+'<td style="color:var(--muted)">W'+b.week+'</td><td>'+renderTicket(b)+'</td><td>'+b.agent+'</td><td style="color:var(--muted)">'+(b.dateClosed||'—')+'</td><td>'+sb(b.status)+'</td><td style="text-align:center">'+(b.excluded==='Yes'?'<span style="color:var(--notif);font-weight:700">Y</span>':'<span style="color:var(--faint)">N</span>')+'</td><td>'+(b.jira?'<span style="font-family:var(--mono);font-size:.6rem;color:var(--primary)">'+b.jira+'</span>':'<span style="color:var(--faint)">—</span>')+'</td><td><span class="reason-cell">'+b.reason+'</span></td></tr>'; }).join(''):'<tr><td colspan="8"><div class="empty-state" style="padding:var(--s8)"><p>No '+type+' breaches logged yet.</p></div></td></tr>';
+  document.getElementById('pg-'+pageId).innerHTML='<div class="kpi-grid" style="grid-template-columns:repeat(3,1fr);max-width:540px;margin-bottom:var(--s6)"><div class="kpi-card"><div class="kpi-label">Net Breaches</div><div class="kpi-value">'+net+'</div></div><div class="kpi-card"><div class="kpi-label">Open</div><div class="kpi-value" style="color:var(--notif)">'+open+'</div></div><div class="kpi-card"><div class="kpi-label">Excluded</div><div class="kpi-value" style="color:var(--muted)">'+excl+'</div></div></div><div class="panel"><div class="panel-header"><span class="panel-title">'+type+' — All Entries</span><span style="font-size:var(--tx-xs);color:var(--muted)">'+f.length+' total</span></div><div style="overflow-x:auto"><table class="data-table"><thead><tr><th>Wk</th><th>Ticket</th><th>Agent</th><th>Closed</th><th>Status</th><th>Excl</th><th>Jira</th><th>Reason</th></tr></thead><tbody>'+rows+'</tbody></table></div></div>';
+}
+function renderAgents(){
+  var rows=AGENTS.map(function(agent){ var c={};TYPES.forEach(function(t){ c[t]=breaches.filter(function(b){ return b.agent===agent&&b.type===t&&b.excluded==='No'; }).length; });var tot=Object.values(c).reduce(function(a,v){ return a+v; },0);var ex=breaches.filter(function(b){ return b.agent===agent&&b.excluded==='Yes'; }).length;return {agent:agent,c:c,tot:tot,ex:ex}; });
+  document.getElementById('agent-tbody').innerHTML=rows.map(function(r){ return '<tr><td class="agent-name">'+r.agent+'</td>'+TYPES.map(function(t){ return '<td>'+hc(r.c[t])+'</td>'; }).join('')+'<td>'+hc(r.tot)+'</td><td style="text-align:center;color:var(--muted)">'+(r.ex||'—')+'</td></tr>'; }).join('')+'<tr style="background:var(--offset);font-weight:700"><td>TOTALS</td>'+TYPES.map(function(t){ return '<td style="text-align:center">'+breaches.filter(function(b){ return b.type===t&&b.excluded==='No'; }).length+'</td>'; }).join('')+'<td style="text-align:center">'+breaches.filter(function(b){ return b.excluded==='No'; }).length+'</td><td style="text-align:center">'+breaches.filter(function(b){ return b.excluded==='Yes'; }).length+'</td></tr>';
+}
+function renderTrends(){
+  var wd={};for(var w=1;w<=52;w++)wd[w]={net:0,ex:0};
+  breaches.forEach(function(b){ if(b.week>=1&&b.week<=52){ if(b.excluded==='No')wd[b.week].net++;else wd[b.week].ex++; } });
+  var ns=Object.values(wd).map(function(d){ return d.net; });
+  var mx=Math.max.apply(null,ns.concat([1]));
+  document.getElementById('week-chart').innerHTML=Object.entries(wd).map(function(e){ var w=e[0],d=e[1];return '<div class="wbg" title="W'+w+': '+d.net+' breach'+(d.net!==1?'es':'')+(d.ex>0?' (+'+d.ex+' excl.)':'')+'"><div class="wb" style="height:'+Math.max((d.net/mx)*100,2)+'%"></div><span class="wl">'+w+'</span></div>'; }).join('');
+  var nz=ns.filter(function(v){ return v>0; });
+  var pw=ns.indexOf(Math.max.apply(null,ns));
+  document.getElementById('peak-wk').textContent=nz.length?'Week '+(pw+1)+' ('+Math.max.apply(null,ns)+' breaches)':'No data yet';
+  document.getElementById('avg-wk').textContent=nz.length?(ns.reduce(function(a,c){ return a+c; },0)/nz.length).toFixed(1):'—';
+  document.getElementById('wks-logged').textContent=nz.length||'0';
+}
+function tb(t){ var m={'KSL-4':'b-ksl4','KM-1':'b-km1','KM-2':'b-km2','PCa':'b-pca','PCm':'b-pcm'};return '<span class="badge '+(m[t]||'')+'">'+t+'</span>'; }
+function sb(s){ var m={Closed:'b-closed',Open:'b-open',Excluded:'b-excluded'};return '<span class="badge '+(m[s]||'')+'">'+s+'</span>'; }
+function hc(v){ var l=v===0?0:v<=2?1:v<=4?2:v<=6?3:4;return '<div class="hc h'+l+'">'+v+'</div>'; }
+function srt(f){ if(sortF===f)sortD*=-1;else{sortF=f;sortD=1;}curPage=1;renderLog(); }
+function chPg(d){ curPage+=d;renderLog(); }
+function updBulk(){ var cbs=document.querySelectorAll('.row-cb:checked'),all=document.querySelectorAll('.row-cb');document.getElementById('bulk-num').textContent=cbs.length;document.getElementById('bulk-bar').classList.toggle('show',cbs.length>0);var sa=document.getElementById('sel-all');if(sa){sa.indeterminate=cbs.length>0&&cbs.length<all.length;sa.checked=all.length>0&&cbs.length===all.length;} }
+function toggleAll(el){ document.querySelectorAll('.row-cb').forEach(function(cb){ cb.checked=el.checked; });updBulk(); }
+function clearSel(){ document.querySelectorAll('.row-cb').forEach(function(cb){ cb.checked=false; });var sa=document.getElementById('sel-all');if(sa){sa.checked=false;sa.indeterminate=false;}document.getElementById('bulk-bar').classList.remove('show'); }
+function bulkDel(){ var ids=[...document.querySelectorAll('.row-cb:checked')].map(function(cb){ return +cb.value; });if(!ids.length)return;if(!confirm('Remove '+ids.length+' selected breach'+(ids.length>1?'es':'')+'?'))return;breaches=breaches.filter(function(b){ return !ids.includes(b.id); });clearSel();renderAll();renderLog();updateBadge(); }
+function openModal(){ document.getElementById('overlay').classList.add('open');setTimeout(function(){ document.getElementById('f-ticket').focus(); },100); }
+function closeModal(){ document.getElementById('overlay').classList.remove('open');['f-week','f-ticket','f-url','f-agent','f-type','f-date','f-jira','f-reason'].forEach(function(id){ document.getElementById(id).value=''; });document.getElementById('f-status').value='Open';document.getElementById('f-excluded').value='No';var e=document.getElementById('f-err');e.style.display='none';e.textContent=''; }
+async function submitBreach(){
+  var week=+document.getElementById('f-week').value,ticket=document.getElementById('f-ticket').value.trim(),url=document.getElementById('f-url').value.trim(),agent=document.getElementById('f-agent').value,type=document.getElementById('f-type').value,status=document.getElementById('f-status').value,date=document.getElementById('f-date').value,excluded=document.getElementById('f-excluded').value,reason=document.getElementById('f-reason').value.trim(),jira=document.getElementById('f-jira').value.trim();
+  var err=document.getElementById('f-err');
+  if(!week||!ticket||!agent||!type||!reason){err.textContent='Please fill in all required fields.';err.style.display='block';return;}
+  if(!/^INC\d{7}$/.test(ticket)){err.textContent='Ticket must be INC followed by 7 digits.';err.style.display='block';return;}
+  if(breaches.find(function(b){ return b.ticket===ticket; })){err.textContent='Ticket '+ticket+' already exists.';err.style.display='block';return;}
+  var fd='';if(date){var p=date.split('-');fd=p[2]+'/'+p[1]+'/'+p[0];}
+  var b={id:nextId++,week:week,ticket:ticket,url:url,agent:agent,type:type,dateClosed:fd,status:status,excluded:excluded,reason:reason,jira:jira};
+  breaches.unshift(b);closeModal();curPage=1;renderAll();updateBadge();
+  if(excelConnected)await appendToExcel(b);
+}
+function del(id){ if(!confirm('Remove this breach entry?'))return;breaches=breaches.filter(function(b){ return b.id!==id; });renderAll();renderLog();updateBadge(); }
+function exportCSV(){ var h=['Week','Ticket','URL','Agent','Type','Date Closed','Status','Excluded','Reason','Jira'];var r=breaches.map(function(b){ return [b.week,b.ticket,b.url||'',b.agent,b.type,b.dateClosed,b.status,b.excluded,'"'+b.reason.replace(/"/g,"''")+'"',b.jira]; });var csv=[h].concat(r).map(function(row){ return row.join(','); }).join('\n');var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='Breaches_2026.csv';a.click(); }
+function initTheme(){ var r=document.documentElement,d=r.getAttribute('data-theme')||'dark';setThemeIcon(d);document.getElementById('theme-toggle').addEventListener('click',function(){ d=d==='dark'?'light':'dark';r.setAttribute('data-theme',d);setThemeIcon(d); }); }
+function setThemeIcon(d){ var t=document.getElementById('theme-toggle');if(!t)return;t.innerHTML=d==='dark'?'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>':'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>'; }
+document.addEventListener('keydown',function(e){ if(e.key==='Escape'){closeModal();closeSetup();}var tag=document.activeElement.tagName;if(e.key==='n'&&tag!=='INPUT'&&tag!=='TEXTAREA'&&tag!=='SELECT')openModal(); });
+init();
+</script>
+</body>
+</html>
