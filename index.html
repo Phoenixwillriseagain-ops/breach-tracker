@@ -1,619 +1,408 @@
-<!DOCTYPE html>
-<html lang="en" data-theme="dark">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Breach Tracker 2026</title>
-<link href="https://api.fontshare.com/v2/css?f[]=satoshi@300,400,500,600,700&display=swap" rel="stylesheet">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<style>
-:root,[data-theme="light"]{
-  --color-bg:#f7f6f2;--color-surface:#f9f8f5;--color-surface-2:#fbfbf9;
-  --color-surface-offset:#f3f0ec;--color-surface-dynamic:#e6e4df;
-  --color-divider:#dcd9d5;--color-border:#d4d1ca;
-  --color-text:#28251d;--color-text-muted:#7a7974;--color-text-faint:#bab9b4;
-  --color-primary:#01696f;--color-primary-hover:#0c4e54;--color-primary-highlight:#cedcd8;
-  --color-success:#437a22;--color-success-highlight:#d4dfcc;
-  --color-warning:#964219;--color-warning-highlight:#ddcfc6;
-  --color-error:#a12c7b;--color-error-highlight:#e0ced7;
-  --color-notification:#a13544;--color-notification-highlight:#dececb;
-  --color-gold:#d19900;--color-gold-highlight:#e9e0c6;
-  --shadow-sm:0 1px 2px oklch(0.2 0.01 80/.06);--shadow-md:0 4px 12px oklch(0.2 0.01 80/.08);
-  --radius-sm:.375rem;--radius-md:.5rem;--radius-lg:.75rem;--radius-xl:1rem;--radius-full:9999px;
-  --font-body:'Satoshi',system-ui,sans-serif;--font-mono:'JetBrains Mono',monospace;
-  --text-xs:clamp(.75rem,.7rem + .25vw,.875rem);--text-sm:clamp(.875rem,.8rem + .35vw,1rem);
-  --text-base:clamp(1rem,.95rem + .25vw,1.125rem);--text-lg:clamp(1.125rem,1rem + .75vw,1.5rem);
-  --text-xl:clamp(1.5rem,1.2rem + 1.25vw,2.25rem);
-  --space-1:.25rem;--space-2:.5rem;--space-3:.75rem;--space-4:1rem;
-  --space-5:1.25rem;--space-6:1.5rem;--space-8:2rem;--space-10:2.5rem;--space-12:3rem;--space-16:4rem;
-  --transition:180ms cubic-bezier(.16,1,.3,1);--sidebar-w:220px;
-}
-[data-theme="dark"]{
-  --color-bg:#171614;--color-surface:#1c1b19;--color-surface-2:#201f1d;
-  --color-surface-offset:#1d1c1a;--color-surface-dynamic:#2d2c2a;
-  --color-divider:#262523;--color-border:#393836;
-  --color-text:#cdccca;--color-text-muted:#797876;--color-text-faint:#5a5957;
-  --color-primary:#4f98a3;--color-primary-hover:#227f8b;--color-primary-highlight:#313b3b;
-  --color-success:#6daa45;--color-success-highlight:#3a4435;
-  --color-warning:#bb653b;--color-warning-highlight:#564942;
-  --color-error:#d163a7;--color-error-highlight:#4c3d46;
-  --color-notification:#dd6974;--color-notification-highlight:#574848;
-  --color-gold:#e8af34;--color-gold-highlight:#4d4332;
-  --shadow-sm:0 1px 2px oklch(0 0 0/.2);--shadow-md:0 4px 12px oklch(0 0 0/.3);
-}
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{-webkit-font-smoothing:antialiased}
-body{min-height:100dvh;font-family:var(--font-body);font-size:var(--text-sm);color:var(--color-text);background:var(--color-bg);display:flex;overflow:hidden}
-button{cursor:pointer;background:none;border:none;font:inherit;color:inherit}
-input,select,textarea{font:inherit;color:inherit}
-table{border-collapse:collapse;width:100%}
-:focus-visible{outline:2px solid var(--color-primary);outline-offset:3px;border-radius:var(--radius-sm)}
-.sidebar{width:var(--sidebar-w);min-width:var(--sidebar-w);background:var(--color-surface);border-right:1px solid var(--color-border);display:flex;flex-direction:column;height:100dvh;position:sticky;top:0;overflow:hidden;z-index:100;}
-.sidebar-logo{display:flex;align-items:center;gap:var(--space-3);padding:var(--space-5) var(--space-4);border-bottom:1px solid var(--color-divider);min-height:64px;}
-.logo-mark{width:32px;height:32px;flex-shrink:0}
-.logo-text{font-size:var(--text-sm);font-weight:700;color:var(--color-text);white-space:nowrap;letter-spacing:-.02em}
-.logo-sub{font-size:var(--text-xs);color:var(--color-text-muted);white-space:nowrap}
-.nav{flex:1;padding:var(--space-3) var(--space-2);display:flex;flex-direction:column;gap:var(--space-1);overflow-y:auto}
-.nav-section-label{font-size:.65rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--color-text-faint);padding:var(--space-4) var(--space-3) var(--space-1);white-space:nowrap}
-.nav-item{display:flex;align-items:center;gap:var(--space-3);padding:var(--space-2) var(--space-3);border-radius:var(--radius-md);cursor:pointer;transition:background var(--transition),color var(--transition);color:var(--color-text-muted);white-space:nowrap;font-size:var(--text-sm);font-weight:500;border:none;background:none;width:100%;text-align:left;}
-.nav-item:hover{background:var(--color-surface-dynamic);color:var(--color-text)}
-.nav-item.active{background:var(--color-primary-highlight);color:var(--color-primary);font-weight:600}
-.nav-item svg{flex-shrink:0;width:16px;height:16px}
-.nav-badge{margin-left:auto;background:var(--color-notification);color:#fff;font-size:.6rem;font-weight:700;padding:1px 6px;border-radius:var(--radius-full);min-width:18px;text-align:center}
-.sidebar-footer{padding:var(--space-4);border-top:1px solid var(--color-divider);display:flex;align-items:center;gap:var(--space-3)}
-.avatar{width:32px;height:32px;border-radius:var(--radius-full);background:var(--color-primary-highlight);display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;color:var(--color-primary);flex-shrink:0}
-.avatar-name{font-size:var(--text-xs);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.avatar-role{font-size:.65rem;color:var(--color-text-muted)}
-.main{flex:1;display:flex;flex-direction:column;height:100dvh;overflow:hidden;min-width:0}
-.topbar{height:64px;min-height:64px;background:var(--color-surface);border-bottom:1px solid var(--color-border);display:flex;align-items:center;gap:var(--space-4);padding:0 var(--space-6);z-index:50;}
-.topbar-title{font-size:var(--text-base);font-weight:700;flex:1;letter-spacing:-.02em}
-.topbar-subtitle{font-size:var(--text-xs);color:var(--color-text-muted);font-weight:400;margin-left:var(--space-2)}
-.topbar-actions{display:flex;align-items:center;gap:var(--space-2)}
-.btn{display:inline-flex;align-items:center;gap:var(--space-2);padding:var(--space-2) var(--space-4);border-radius:var(--radius-md);font-size:var(--text-xs);font-weight:600;cursor:pointer;transition:background var(--transition),color var(--transition);border:1px solid transparent;white-space:nowrap}
-.btn-primary{background:var(--color-primary);color:#fff}
-.btn-primary:hover{background:var(--color-primary-hover)}
-.btn-ghost{background:transparent;color:var(--color-text-muted);border-color:var(--color-border)}
-.btn-ghost:hover{background:var(--color-surface-dynamic);color:var(--color-text)}
-.btn svg{width:14px;height:14px}
-.theme-toggle{width:36px;height:36px;border-radius:var(--radius-md);display:flex;align-items:center;justify-content:center;background:transparent;color:var(--color-text-muted);border:1px solid var(--color-border);transition:background var(--transition);}
-.theme-toggle:hover{background:var(--color-surface-dynamic);color:var(--color-text)}
-.content{flex:1;overflow-y:auto;padding:var(--space-6)}
-.kpi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:var(--space-4);margin-bottom:var(--space-6)}
-.kpi-card{background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-lg);padding:var(--space-4) var(--space-5);box-shadow:var(--shadow-sm);}
-.kpi-label{font-size:var(--text-xs);color:var(--color-text-muted);font-weight:500;margin-bottom:var(--space-2);text-transform:uppercase;letter-spacing:.04em}
-.kpi-value{font-size:var(--text-xl);font-weight:700;line-height:1;font-variant-numeric:tabular-nums lining-nums;letter-spacing:-.03em}
-.kpi-delta{font-size:var(--text-xs);color:var(--color-text-muted);margin-top:var(--space-1)}
-.kpi-delta.up{color:var(--color-notification)}
-.kpi-delta.down{color:var(--color-success)}
-.panel{background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);margin-bottom:var(--space-6);overflow:hidden}
-.panel-header{display:flex;align-items:center;justify-content:space-between;padding:var(--space-4) var(--space-5);border-bottom:1px solid var(--color-divider);}
-.panel-title{font-size:var(--text-sm);font-weight:700;letter-spacing:-.01em}
-.breach-bars{padding:var(--space-4) var(--space-5);display:flex;flex-direction:column;gap:var(--space-3)}
-.bar-row{display:grid;grid-template-columns:80px 1fr 50px;align-items:center;gap:var(--space-3)}
-.bar-label{font-size:var(--text-xs);font-weight:600;color:var(--color-text-muted)}
-.bar-track{background:var(--color-surface-dynamic);border-radius:var(--radius-full);height:8px;overflow:hidden}
-.bar-fill{height:100%;border-radius:var(--radius-full);transition:width .6s cubic-bezier(.16,1,.3,1)}
-.bar-count{font-size:var(--text-xs);font-weight:700;text-align:right;font-variant-numeric:tabular-nums}
-.filters{display:flex;align-items:center;gap:var(--space-3);padding:var(--space-3) var(--space-5);border-bottom:1px solid var(--color-divider);flex-wrap:wrap;}
-.search-wrap{position:relative;flex:1;min-width:200px}
-.search-wrap svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);width:14px;height:14px;color:var(--color-text-faint);pointer-events:none}
-.search-input{width:100%;padding:var(--space-2) var(--space-3) var(--space-2) 34px;background:var(--color-surface-offset);border:1px solid var(--color-border);border-radius:var(--radius-md);font-size:var(--text-xs);color:var(--color-text);}
-.search-input:focus{border-color:var(--color-primary);outline:none}
-.search-input::placeholder{color:var(--color-text-faint)}
-.filter-select{padding:var(--space-2) 28px var(--space-2) var(--space-3);background:var(--color-surface-offset);border:1px solid var(--color-border);border-radius:var(--radius-md);font-size:var(--text-xs);color:var(--color-text);cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center;}
-.data-table th{padding:var(--space-2) var(--space-3);text-align:left;font-weight:600;font-size:.65rem;text-transform:uppercase;letter-spacing:.06em;color:var(--color-text-muted);background:var(--color-surface-offset);border-bottom:1px solid var(--color-border);white-space:nowrap;cursor:pointer;user-select:none;}
-.data-table th:hover{color:var(--color-text)}
-.data-table td{padding:var(--space-3) var(--space-3);border-bottom:1px solid var(--color-divider);vertical-align:middle;}
-.data-table tr:last-child td{border-bottom:none}
-.data-table tbody tr:hover{background:var(--color-surface-offset)}
-.badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:var(--radius-full);font-size:.6rem;font-weight:700;letter-spacing:.03em;white-space:nowrap;}
-.badge-closed{background:var(--color-success-highlight);color:var(--color-success)}
-.badge-open{background:var(--color-notification-highlight);color:var(--color-notification)}
-.badge-excluded{background:var(--color-surface-dynamic);color:var(--color-text-muted)}
-.badge-ksl4{background:var(--color-error-highlight);color:var(--color-error)}
-.badge-km1{background:var(--color-warning-highlight);color:var(--color-warning)}
-.badge-km2{background:var(--color-gold-highlight);color:var(--color-gold)}
-.badge-pca{background:var(--color-primary-highlight);color:var(--color-primary)}
-.badge-pcm{background:var(--color-surface-dynamic);color:var(--color-text-muted)}
-.modal-overlay{position:fixed;inset:0;background:oklch(0 0 0/.5);z-index:200;display:flex;align-items:center;justify-content:center;padding:var(--space-4);opacity:0;pointer-events:none;transition:opacity var(--transition);}
-.modal-overlay.open{opacity:1;pointer-events:all}
-.modal{background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-xl);box-shadow:var(--shadow-md);width:100%;max-width:560px;max-height:90dvh;overflow-y:auto;transform:translateY(12px);transition:transform var(--transition);}
-.modal-overlay.open .modal{transform:translateY(0)}
-.modal-header{display:flex;align-items:center;justify-content:space-between;padding:var(--space-5) var(--space-6);border-bottom:1px solid var(--color-divider);position:sticky;top:0;background:var(--color-surface);}
-.modal-title{font-size:var(--text-base);font-weight:700}
-.modal-close{width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:var(--radius-md);color:var(--color-text-muted);}
-.modal-close:hover{background:var(--color-surface-dynamic)}
-.modal-body{padding:var(--space-5) var(--space-6);display:flex;flex-direction:column;gap:var(--space-4)}
-.form-row{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-4)}
-.form-group{display:flex;flex-direction:column;gap:var(--space-2)}
-.form-group.full{grid-column:1/-1}
-.form-label{font-size:var(--text-xs);font-weight:600;color:var(--color-text-muted);letter-spacing:.03em}
-.form-input{padding:var(--space-2) var(--space-3);background:var(--color-surface-offset);border:1px solid var(--color-border);border-radius:var(--radius-md);font-size:var(--text-xs);color:var(--color-text);}
-.form-input:focus{border-color:var(--color-primary);outline:none}
-.form-textarea{resize:vertical;min-height:80px}
-.modal-footer{display:flex;justify-content:flex-end;gap:var(--space-2);padding:var(--space-4) var(--space-6) var(--space-5);border-top:1px solid var(--color-divider);}
-.heat-cell{text-align:center;font-weight:700;border-radius:var(--radius-sm);padding:var(--space-1) var(--space-2);font-variant-numeric:tabular-nums;}
-.heat-0{background:var(--color-success-highlight);color:var(--color-success)}
-.heat-1{background:var(--color-gold-highlight);color:var(--color-gold)}
-.heat-2{background:var(--color-warning-highlight);color:var(--color-warning)}
-.heat-3{background:var(--color-notification-highlight);color:var(--color-notification)}
-.heat-4{background:var(--color-error-highlight);color:var(--color-error)}
-.empty-state{display:flex;flex-direction:column;align-items:center;text-align:center;padding:var(--space-16) var(--space-8);color:var(--color-text-muted);}
-.empty-state svg{width:40px;height:40px;color:var(--color-text-faint);margin-bottom:var(--space-4)}
-.tabs{display:flex;border-bottom:1px solid var(--color-border);padding:0 var(--space-5)}
-.tab{padding:var(--space-3) var(--space-4);font-size:var(--text-xs);font-weight:600;color:var(--color-text-muted);border-bottom:2px solid transparent;cursor:pointer;transition:color var(--transition),border-color var(--transition);}
-.tab:hover{color:var(--color-text)}
-.tab.active{color:var(--color-primary);border-bottom-color:var(--color-primary)}
-.chart-wrap{padding:var(--space-5);overflow-x:auto}
-.week-chart{display:flex;align-items:flex-end;gap:6px;height:120px;min-width:600px}
-.week-bar-group{display:flex;flex-direction:column;align-items:center;flex:1;gap:2px;cursor:default}
-.week-bar{width:100%;background:var(--color-primary);border-radius:var(--radius-sm) var(--radius-sm) 0 0;min-height:2px;opacity:.7;}
-.week-bar:hover,.week-bar-group:hover .week-bar{opacity:1}
-.week-label{font-size:.55rem;color:var(--color-text-faint);margin-top:4px}
-.page-section{display:none}
-.page-section.active{display:block}
-.ticket-id{font-family:var(--font-mono);font-size:.65rem;color:var(--color-text-muted)}
-.reason-cell{max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--color-text-muted);font-size:var(--text-xs)}
-.row-excluded td{opacity:.55;text-decoration:line-through}
-.row-excluded td:last-child{text-decoration:none}
-.pagination{display:flex;align-items:center;justify-content:space-between;padding:var(--space-3) var(--space-5);border-top:1px solid var(--color-divider);font-size:var(--text-xs);color:var(--color-text-muted)}
-.page-btns{display:flex;gap:var(--space-2)}
-.page-btn{padding:var(--space-1) var(--space-3);border-radius:var(--radius-md);border:1px solid var(--color-border);background:var(--color-surface-offset);color:var(--color-text-muted);font-size:var(--text-xs);cursor:pointer;}
-.page-btn:hover:not(:disabled){background:var(--color-surface-dynamic);color:var(--color-text)}
-.page-btn:disabled{opacity:.4;cursor:default}
-.summary-name{font-weight:600;font-size:var(--text-xs)}
+from openpyxl import Workbook
+from openpyxl.styles import (PatternFill, Font, Alignment, Border, Side,
+                              GradientFill)
+from openpyxl.utils import get_column_letter
+from openpyxl.worksheet.table import Table, TableStyleInfo
+from openpyxl.worksheet.datavalidation import DataValidation
+from openpyxl.formatting.rule import ColorScaleRule, CellIsRule, FormulaRule
+from openpyxl.chart import LineChart, Reference
 
-.cb-col{width:36px;text-align:center}
-.row-cb{width:16px;height:16px;cursor:pointer;accent-color:var(--color-primary)}
-.bulk-bar{display:none;align-items:center;gap:var(--space-3);padding:var(--space-3) var(--space-5);background:var(--color-primary-highlight);border-bottom:1px solid var(--color-primary);font-size:var(--text-xs);font-weight:600;color:var(--color-primary);}
-.bulk-bar.visible{display:flex}
-.bulk-count{flex:1}
-.btn-danger{background:var(--color-notification);color:#fff;border-color:var(--color-notification)}
-.btn-danger:hover{background:var(--color-notification-hover,#8a2535)}
-th.cb-col input{width:16px;height:16px;cursor:pointer;accent-color:var(--color-primary)}
-</style>
-</head>
-<body>
-<aside class="sidebar">
-  <div class="sidebar-logo">
-    <svg class="logo-mark" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect width="32" height="32" rx="8" fill="var(--color-primary)"/>
-      <path d="M9 10h9a4 4 0 0 1 0 8H9V10Z" fill="none" stroke="white" stroke-width="2" stroke-linejoin="round"/>
-      <path d="M9 18h10a4 4 0 0 1 0 8H9V18Z" fill="none" stroke="white" stroke-width="2" stroke-linejoin="round" opacity=".6"/>
-    </svg>
-    <div>
-      <div class="logo-text">BreachTrack</div>
-      <div class="logo-sub">SLA Monitor 2026</div>
-    </div>
-  </div>
-  <nav class="nav">
-    <div class="nav-section-label">Overview</div>
-    <button class="nav-item active" onclick="navigate('dashboard',this)">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Dashboard
-    </button>
-    <button class="nav-item" onclick="navigate('tracking',this)">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>Breach Log
-      <span class="nav-badge" id="open-badge"></span>
-    </button>
-    
-    <div class="nav-section-label">By Type</div>
-    <button class="nav-item" onclick="navigate('type-ksl4',this)">
-      <span class="badge badge-wri" style="font-size:.55rem;padding:2px 6px">KSL-4</span>KSL-4 Breaches
-    </button>
-    <button class="nav-item" onclick="navigate('type-km1',this)">
-      <span class="badge badge-km1" style="font-size:.55rem;padding:2px 6px">KM-1</span>KM-1 Breaches
-    </button>
-    <button class="nav-item" onclick="navigate('type-km2',this)">
-      <span class="badge badge-km2" style="font-size:.55rem;padding:2px 6px">KM-2</span>KM-2 Breaches
-    </button>
-    <button class="nav-item" onclick="navigate('type-pca',this)">
-      <span class="badge badge-pca" style="font-size:.55rem;padding:2px 6px">PCa</span>PCa Breaches
-    </button>
-    <button class="nav-item" onclick="navigate('type-pcm',this)">
-      <span class="badge badge-pcm" style="font-size:.55rem;padding:2px 6px">PCm</span>PCm Breaches
-    </button>
-    <div class="nav-section-label">Analysis</div>
-    <button class="nav-item" onclick="navigate('agents',this)">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Agent Summary
-    </button>
-    <button class="nav-item" onclick="navigate('trends',this)">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Weekly Trends
-    </button>
-  </nav>
-  <div class="sidebar-footer">
-    <div class="avatar">OP</div>
-    <div style="flex:1;min-width:0">
-      <div class="avatar-name">Ops Manager</div>
-      
-    </div>
-    <button class="theme-toggle" data-theme-toggle>
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-    </button>
-  </div>
-</aside>
-<div class="main">
-  <header class="topbar">
-    <div class="topbar-title">
-      <span id="topbar-title-text">Dashboard</span>
-      <span class="topbar-subtitle">Week 16 · April 2026</span>
-    </div>
-    <div class="topbar-actions">
-      <button class="btn btn-ghost" onclick="exportCSV()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Export CSV
-      </button>
-      <button class="btn btn-primary" onclick="openModal()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Log Breach
-      </button>
-    </div>
-  </header>
-  <div class="content">
-    <div id="page-dashboard" class="page-section active">
-      <div class="kpi-grid" id="kpi-grid"></div>
-      <div style="display:grid;grid-template-columns:1fr 340px;gap:var(--space-6)">
-        <div class="panel">
-          <div class="panel-header"><span class="panel-title">Recent Breaches</span><button class="btn btn-ghost" onclick="navigate('tracking',document.querySelectorAll('.nav-item')[1])">View all</button></div>
-          <div style="overflow-x:auto"><table class="data-table"><thead><tr><th>Ticket</th><th>Agent</th><th>Type</th><th>Status</th><th>Week</th></tr></thead><tbody id="recent-tbody"></tbody></table></div>
-        </div>
-        <div class="panel">
-          <div class="panel-header"><span class="panel-title">Breach Types</span></div>
-          <div class="breach-bars" id="type-bars"></div>
-        </div>
-      </div>
-    </div>
-    <div id="page-tracking" class="page-section">
-      <div class="panel">
-        <div class="panel-header"><span class="panel-title">Breach Log</span><span id="row-count" style="font-size:var(--text-xs);color:var(--color-text-muted)"></span></div>
-        
-        <div class="bulk-bar" id="bulk-bar">
-          <span class="bulk-count"><span id="bulk-count-num">0</span> selected</span>
-          <button class="btn btn-ghost" onclick="clearSelection()">Deselect All</button>
-          <button class="btn btn-danger" onclick="bulkDelete()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
-            Remove Selected
-          </button>
-        </div>
-        <div class="filters">
-          <div class="search-wrap">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-            <input class="search-input" type="text" placeholder="Search ticket, agent..." id="search-input" oninput="renderTable()">
-          </div>
-          <select class="filter-select" id="filter-type" onchange="renderTable()"><option value="">All Types</option><option>KSL-4</option><option>KM-1</option><option>KM-2</option><option>PCa</option><option>PCm</option></select>
-          <select class="filter-select" id="filter-status" onchange="renderTable()"><option value="">All Statuses</option><option>Open</option><option>Closed</option><option>Excluded</option></select>
-          <select class="filter-select" id="filter-agent" onchange="renderTable()"><option value="">All Agents</option></select>
-        </div>
-        <div style="overflow-x:auto">
-          <table class="data-table">
-            <thead><tr>
-              <th class="cb-col"><input type="checkbox" id="select-all" onclick="toggleSelectAll(this)" title="Select all"></th><th onclick="sortBy('week')">Wk</th><th onclick="sortBy('ticket')">Ticket</th><th onclick="sortBy('agent')">Agent</th>
-              <th onclick="sortBy('type')">Type</th><th onclick="sortBy('dateClosed')">Date Closed</th>
-              <th onclick="sortBy('status')">Status</th><th>Excl.</th><th>Reason</th><th>Actions</th>
-            </tr></thead>
-            <tbody id="main-tbody"></tbody>
-          </table>
-        </div>
-        <div class="pagination">
-          <span id="page-info"></span>
-          <div class="page-btns">
-            <button class="page-btn" onclick="changePage(-1)" id="btn-prev">← Prev</button>
-            <button class="page-btn" onclick="changePage(1)" id="btn-next">Next →</button>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div id="page-agents" class="page-section">
-      <div class="panel">
-        <div class="panel-header"><span class="panel-title">Agent Performance — Net Breaches 2026</span></div>
-        <div style="overflow-x:auto">
-          <table class="data-table"><thead><tr><th>Agent</th><th>KSL-4</th><th>KM-1</th><th>KM-2</th><th>PCa</th><th>PCm</th><th>TOTAL</th><th>Excluded</th></tr></thead><tbody id="agent-tbody"></tbody></table>
-        </div>
-      </div>
-    </div>
-    <div id="page-trends" class="page-section">
-      <div class="panel">
-        <div class="panel-header"><span class="panel-title">Weekly Breach Trend — 2026</span></div>
-        <div class="chart-wrap"><div class="week-chart" id="week-chart"></div></div>
-        <div style="display:flex;gap:var(--space-6);padding:var(--space-4) var(--space-5);border-top:1px solid var(--color-divider)">
-          <div><div class="kpi-label">Peak Week</div><div style="font-weight:700" id="peak-week">—</div></div>
-          <div><div class="kpi-label">Avg / Week</div><div style="font-weight:700" id="avg-week">—</div></div>
-          <div><div class="kpi-label">Weeks Logged</div><div style="font-weight:700" id="weeks-logged">—</div></div>
-        </div>
-      </div>
-    </div>
-  </div>
+wb = Workbook()
 
-    <div id="page-type-ksl4" class="page-section"></div>
-    <div id="page-type-km1" class="page-section"></div>
-    <div id="page-type-km2" class="page-section"></div>
-    <div id="page-type-pca" class="page-section"></div>
-    <div id="page-type-pcm" class="page-section"></div>
-  </div>
-<div class="modal-overlay" id="modal-overlay" onclick="closeModalOutside(event)">
-  <div class="modal">
-    <div class="modal-header">
-      <span class="modal-title">Log New Breach</span>
-      <button class="modal-close" onclick="closeModal()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
-    </div>
-    <div class="modal-body">
-      <div class="form-row">
-        <div class="form-group"><label class="form-label">Week *</label><select class="form-input" id="f-week"><option value="">Select week</option></select></div>
-        <div class="form-group"><label class="form-label">Incident Ticket *</label><input class="form-input" type="text" id="f-ticket" placeholder="INC0000000"></div>
-      </div>
-      <div class="form-row">
-        <div class="form-group"><label class="form-label">Agent *</label><select class="form-input" id="f-agent"><option value="">Select agent</option></select></div>
-        <div class="form-group"><label class="form-label">Breach Type *</label><select class="form-input" id="f-type"><option value="">Select type</option><option value="KSL-4">KSL-4 — Wrong Routing</option><option value="KM-1">KM-1 — Reopen</option><option value="KM-2">KM-2 — Response Time</option><option value="PCa">PCa — Priority Change (Auto)</option><option value="PCm">PCm — Priority Change (Manual)</option></select></div>
-      </div>
-      <div class="form-row">
-        <div class="form-group"><label class="form-label">Status *</label><select class="form-input" id="f-status"><option value="Open">Open</option><option value="Closed">Closed</option><option value="Excluded">Excluded</option></select></div>
-        <div class="form-group"><label class="form-label">Date Closed</label><input class="form-input" type="date" id="f-date"></div>
-      </div>
-      <div class="form-row">
-        <div class="form-group"><label class="form-label">Excluded?</label><select class="form-input" id="f-excluded"><option value="No">No</option><option value="Yes">Yes</option></select></div>
-        <div class="form-group"><label class="form-label">Jira Link</label><input class="form-input" type="text" id="f-jira" placeholder="JIRA-12345"></div>
-      </div>
-      <div class="form-group full"><label class="form-label">Reason for Breach *</label><textarea class="form-input form-textarea" id="f-reason" placeholder="Describe why the breach occurred..." maxlength="500"></textarea></div>
-      <div id="form-error" style="color:var(--color-notification);font-size:var(--text-xs);display:none"></div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
-      <button class="btn btn-primary" onclick="submitBreach()">Log Breach</button>
-    </div>
-  </div>
-</div>
-<script>
-const AGENTS=['Beltukova','Blani','Grevtseva','Hatsuoka','Karagiannopoulou','Koufos','Levine','Lonis','Marousopoulou','Rakic Moutsidi','Saiz','Sbaiz','Stanisavljevic','Tavallaee','TriesterVina','Tselentis','Tsiatsou','Tsiorbas','Tzelepoglou','Yoshizawa'];
-const TYPES=['KSL-4','KM-1','KM-2','PCa','PCm'];
-let breaches=[
-  {id:1,week:1,ticket:'INC0123456',agent:'Beltukova',type:'KSL-4',dateClosed:'15/01/2026',status:'Closed',excluded:'No',reason:'Customer provided wrong information initially, required re-routing to security team.',jira:'JIRA-001'},
-  {id:2,week:1,ticket:'INC0123457',agent:'Levine',type:'KM-1',dateClosed:'16/01/2026',status:'Excluded',excluded:'Yes',reason:'System outage from 14:00-16:00 CET prevented timely response.',jira:'JIRA-002'},
-  {id:3,week:2,ticket:'INC0123458',agent:'Koufos',type:'KM-2',dateClosed:'',status:'Open',excluded:'No',reason:'Waiting for customer response — escalation pending.',jira:''},
+# ── COLOURS ──────────────────────────────────────────────────────────────────
+C_DARK_BLUE  = "1F4E78"
+C_MED_BLUE   = "4472C4"
+C_LIGHT_BLUE = "DDEBF7"
+C_WHITE      = "FFFFFF"
+C_HEADER_FG  = "FFFFFF"
+C_YELLOW     = "FFF9CC"   # editable cells
+C_GRAY_LOCK  = "F2F2F2"   # locked / auto cells
+C_GREEN_OK   = "C6E0B4"
+C_YELLOW_W   = "FFE699"
+C_ORANGE_W   = "FFC000"
+C_RED_W      = "FF6B6B"
+C_OPEN_BG    = "FFE6E6"
+C_CLOSED_BG  = "E6F4EA"
+C_EXCL_BG    = "E0E0E0"
+C_CREAM      = "FFF9E6"
 
-  {id:5,week:3,ticket:'INC0123475',agent:'Yoshizawa',type:'KSL-4',dateClosed:'22/01/2026',status:'Closed',excluded:'No',reason:'IT ticket routed to HR by mistake during peak volume.',jira:'JIRA-004'},
-  {id:6,week:3,ticket:'INC0123480',agent:'Tsiatsou',type:'KM-1',dateClosed:'23/01/2026',status:'Closed',excluded:'No',reason:'Customer reopened ticket 5 days after close — original issue not fully resolved.',jira:'JIRA-005'},
-  {id:7,week:4,ticket:'INC0123491',agent:'Grevtseva',type:'PCa',dateClosed:'28/01/2026',status:'Closed',excluded:'No',reason:'System auto-escalated priority due to customer escalation trigger.',jira:'JIRA-006'},
-  {id:8,week:4,ticket:'INC0123499',agent:'Hatsuoka',type:'KM-2',dateClosed:'30/01/2026',status:'Closed',excluded:'No',reason:'Response delayed 3 hours beyond 1-hour SLA due to agent emergency leave.',jira:'JIRA-007'},
-  {id:9,week:5,ticket:'INC0123510',agent:'Lonis',type:'KSL-4',dateClosed:'04/02/2026',status:'Closed',excluded:'No',reason:'Incorrect queue routing — ticket sent to network team instead of security.',jira:'JIRA-008'},
-  {id:10,week:5,ticket:'INC0123515',agent:'Saiz',type:'KM-1',dateClosed:'05/02/2026',status:'Closed',excluded:'No',reason:'Customer reopened within 72 hours — VPN issue was only partially fixed.',jira:'JIRA-009'},
-  {id:11,week:6,ticket:'INC0123528',agent:'Marousopoulou',type:'PCm',dateClosed:'10/02/2026',status:'Closed',excluded:'No',reason:'Manual priority downgrade was incorrect; supervisor corrected within 2 hours.',jira:'JIRA-010'},
-  {id:12,week:6,ticket:'INC0123535',agent:'Blani',type:'KM-2',dateClosed:'11/02/2026',status:'Excluded',excluded:'Yes',reason:'Force majeure — office power outage from 09:00-12:00.',jira:'JIRA-011'},
-  {id:13,week:7,ticket:'INC0123549',agent:'Stanisavljevic',type:'KSL-4',dateClosed:'17/02/2026',status:'Closed',excluded:'No',reason:'New agent misidentified ticket category during training period.',jira:'JIRA-012'},
-  {id:14,week:7,ticket:'INC0123554',agent:'Tavallaee',type:'PCa',dateClosed:'18/02/2026',status:'Closed',excluded:'No',reason:'Auto priority change triggered by customer sentiment score threshold.',jira:'JIRA-013'},
-  {id:15,week:8,ticket:'INC0123568',agent:'Tsiorbas',type:'KM-1',dateClosed:'',status:'Open',excluded:'No',reason:'Awaiting QA review of resolution quality.',jira:''},
-  {id:16,week:8,ticket:'INC0123571',agent:'Tzelepoglou',type:'KM-2',dateClosed:'25/02/2026',status:'Closed',excluded:'No',reason:'Agent handling 3 concurrent P1 tickets; response exceeded SLA by 45 min.',jira:'JIRA-014'},
+def fill(hex_):  return PatternFill("solid", fgColor=hex_)
+def bold_font(size=11, color="000000", italic=False):
+    return Font(name="Calibri", size=size, bold=True, color=color, italic=italic)
+def reg_font(size=11, color="000000"):
+    return Font(name="Calibri", size=size, color=color)
+def center(): return Alignment(horizontal="center", vertical="center", wrap_text=True)
+def left():   return Alignment(horizontal="left",   vertical="center", wrap_text=True)
+def thin_border():
+    s = Side(style="thin")
+    return Border(left=s, right=s, top=s, bottom=s)
+def thick_border():
+    s = Side(style="medium")
+    return Border(left=s, right=s, top=s, bottom=s)
 
-  {id:18,week:9,ticket:'INC0123590',agent:'Sbaiz',type:'PCm',dateClosed:'04/03/2026',status:'Closed',excluded:'No',reason:'Priority manually changed without supervisor approval.',jira:'JIRA-016'},
-  {id:19,week:10,ticket:'INC0123601',agent:'TriesterVina',type:'KM-1',dateClosed:'10/03/2026',status:'Closed',excluded:'No',reason:'Customer reopened after 4 days — related sub-issue was not addressed.',jira:'JIRA-017'},
-  {id:20,week:10,ticket:'INC0123608',agent:'Tselentis',type:'KM-2',dateClosed:'11/03/2026',status:'Closed',excluded:'No',reason:'SLA breach of 2 hours due to complex multi-team coordination requirement.',jira:'JIRA-018'},
-  {id:21,week:11,ticket:'INC0123620',agent:'Karagiannopoulou',type:'KSL-4',dateClosed:'17/03/2026',status:'Closed',excluded:'No',reason:'Wrong category selected from dropdown — ticket routing mismatch.',jira:'JIRA-019'},
-  {id:22,week:12,ticket:'INC0123635',agent:'Rakic Moutsidi',type:'PCa',dateClosed:'24/03/2026',status:'Closed',excluded:'No',reason:'Auto-priority escalation not suppressed despite known false-positive trigger.',jira:'JIRA-020'},
-  {id:23,week:13,ticket:'INC0123648',agent:'Beltukova',type:'KM-1',dateClosed:'',status:'Open',excluded:'No',reason:'Investigation ongoing — customer dispute about resolution quality.',jira:''},
-  {id:24,week:14,ticket:'INC0123655',agent:'Levine',type:'KSL-4',dateClosed:'07/04/2026',status:'Closed',excluded:'No',reason:'Routing error during high-volume Monday morning queue.',jira:'JIRA-021'},
-  {id:25,week:15,ticket:'INC0123669',agent:'Koufos',type:'KM-2',dateClosed:'14/04/2026',status:'Closed',excluded:'No',reason:'Response time of 2.5 hours exceeded 1-hour SLA due to system slowdown.',jira:'JIRA-022'},
-];
-let nextId=26,currentPage=1,sortField='week',sortDir=1,activeSection='dashboard';
-const PAGE_SIZE=10;
+AGENTS = ['Beltukova','Blani','Grevtseva','Hatsuoka','Karagiannopoulou',
+          'Koufos','Levine','Lonis','Marousopoulou','Rakic Moutsidi',
+          'Saiz','Sbaiz','Stanisavljevic','Tavallaee','TriesterVina',
+          'Tselentis','Tsiatsou','Tsiorbas','Tzelepoglou','Yoshizawa',
+          'Not Agent Related']
+TYPES  = ['KSL-4','KM-1','KM-2','PCa','PCm']
 
-const TYPE_PAGE_MAP={'type-ksl4':'KSL-4','type-km1':'KM-1','type-km2':'KM-2','type-pca':'PCa','type-pcm':'PCm'};
-const origNavigate=navigate;
-function navigate(s,btn){
-  document.querySelectorAll('.page-section').forEach(e=>e.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(e=>e.classList.remove('active'));
-  const pg=document.getElementById('page-'+s);
-  if(!pg)return;
-  pg.classList.add('active');
-  if(btn)btn.classList.add('active');
-  activeSection=s;
-  const t={dashboard:'Dashboard',tracking:'Breach Log',agents:'Agent Summary',trends:'Weekly Trends',
-    'type-ksl4':'KSL-4 Breaches','type-km1':'KM-1 Breaches','type-km2':'KM-2 Breaches',
-    'type-pca':'PCa Breaches','type-pcm':'PCm Breaches'};
-  document.getElementById('topbar-title-text').textContent=t[s]||s;
-  if(TYPE_PAGE_MAP[s]){renderTypePage(s,TYPE_PAGE_MAP[s]);}
-  else{renderAll();}
-}
-function renderTypePage(pageId,type){
-  const filtered=breaches.filter(b=>b.type===type);
-  const net=filtered.filter(b=>b.excluded==='No').length;
-  const open=filtered.filter(b=>b.status==='Open').length;
-  const excl=filtered.filter(b=>b.excluded==='Yes').length;
-  const pg=document.getElementById('page-'+pageId);
-  pg.innerHTML=`
-    <div class="kpi-grid" style="grid-template-columns:repeat(3,1fr);max-width:600px;margin-bottom:var(--space-6)">
-      <div class="kpi-card"><div class="kpi-label">Net Breaches</div><div class="kpi-value">${net}</div></div>
-      <div class="kpi-card"><div class="kpi-label">Open</div><div class="kpi-value" style="color:var(--color-notification)">${open}</div></div>
-      <div class="kpi-card"><div class="kpi-label">Excluded</div><div class="kpi-value" style="color:var(--color-text-muted)">${excl}</div></div>
-    </div>
-    <div class="panel">
-      <div class="panel-header"><span class="panel-title">${type} — All Entries</span><span style="font-size:var(--text-xs);color:var(--color-text-muted)">${filtered.length} total</span></div>
-      <div style="overflow-x:auto">
-        <table class="data-table"><thead><tr><th>Wk</th><th>Ticket</th><th>Agent</th><th>Date Closed</th><th>Status</th><th>Excl.</th><th>Reason</th></tr></thead>
-        <tbody>${filtered.length?filtered.map(b=>`<tr class="${b.excluded==='Yes'?'row-excluded':''}">
-          <td style="color:var(--color-text-muted)">W${b.week}</td>
-          <td><span class="ticket-id">${b.ticket}</span></td>
-          <td>${b.agent}</td>
-          <td style="color:var(--color-text-muted)">${b.dateClosed||'—'}</td>
-          <td>${sb(b.status)}</td>
-          <td style="text-align:center">${b.excluded==='Yes'?'<span style="color:var(--color-notification);font-weight:700">Y</span>':'<span style="color:var(--color-text-faint)">N</span>'}</td>
-          <td><span class="reason-cell" title="${b.reason.replace(/"/g,"'")}">${b.reason}</span></td>
-        </tr>`).join(''):'<tr><td colspan="7"><div class="empty-state"><p>No '+type+' breaches logged.</p></div></td></tr>'}
-        </tbody></table>
-      </div>
-    </div>`;
-  updateBadge();
-}
+# ════════════════════════════════════════════════════════════════════════════
+# SHEET 1 — Breaches  (data table — syncs with app)
+# ════════════════════════════════════════════════════════════════════════════
+ws1 = wb.active
+ws1.title = "Breaches"
+ws1.sheet_view.showGridLines = True
+ws1.freeze_panes = "A2"
 
+HEADERS = ["Week","Ticket","URL","Agent","Type",
+           "DateClosed","Status","Excluded","Reason","Jira"]
+COL_WIDTHS = [8, 14, 40, 22, 10, 14, 12, 10, 50, 14]
 
-function updateBulkBar(){
-  const cbs=document.querySelectorAll('.row-cb:checked');
-  const bar=document.getElementById('bulk-bar');
-  const cnt=document.getElementById('bulk-count-num');
-  cnt.textContent=cbs.length;
-  bar.classList.toggle('visible',cbs.length>0);
-  const all=document.querySelectorAll('.row-cb');
-  document.getElementById('select-all').indeterminate=cbs.length>0&&cbs.length<all.length;
-  document.getElementById('select-all').checked=all.length>0&&cbs.length===all.length;
-}
-function toggleSelectAll(el){
-  document.querySelectorAll('.row-cb').forEach(cb=>cb.checked=el.checked);
-  updateBulkBar();
-}
-function clearSelection(){
-  document.querySelectorAll('.row-cb').forEach(cb=>cb.checked=false);
-  const sa=document.getElementById('select-all');
-  if(sa){sa.checked=false;sa.indeterminate=false;}
-  document.getElementById('bulk-bar').classList.remove('visible');
-}
-function bulkDelete(){
-  const ids=[...document.querySelectorAll('.row-cb:checked')].map(cb=>+cb.value);
-  if(!ids.length)return;
-  if(!confirm(`Remove ${ids.length} selected breach${ids.length>1?'es':''}?`))return;
-  breaches=breaches.filter(b=>!ids.includes(b.id));
-  clearSelection();
-  renderAll();
-}
+# Header row
+for ci, (h, w) in enumerate(zip(HEADERS, COL_WIDTHS), 1):
+    cell = ws1.cell(row=1, column=ci, value=h)
+    cell.fill      = fill(C_DARK_BLUE)
+    cell.font      = bold_font(11, C_WHITE)
+    cell.alignment = center()
+    cell.border    = thin_border()
+    ws1.column_dimensions[get_column_letter(ci)].width = w
 
-function init(){
-  const ws=document.getElementById('f-week');
-  for(let w=1;w<=52;w++) ws.innerHTML+=`<option value="${w}">Week ${w}</option>`;
-  const as=document.getElementById('f-agent');
-  AGENTS.forEach(a=>as.innerHTML+=`<option value="${a}">${a}</option>`);
-  const af=document.getElementById('filter-agent');
-  AGENTS.forEach(a=>af.innerHTML+=`<option value="${a}">${a}</option>`);
-  renderAll();
-  initTheme();
-}
-function navigate(s,btn){
-  document.querySelectorAll('.page-section').forEach(e=>e.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(e=>e.classList.remove('active'));
-  document.getElementById('page-'+s).classList.add('active');
-  if(btn) btn.classList.add('active');
-  activeSection=s;
-  const t={dashboard:'Dashboard',tracking:'Breach Log',agents:'Agent Summary',trends:'Weekly Trends'};
-  document.getElementById('topbar-title-text').textContent=t[s];
-  renderAll();
-}
-function renderAll(){updateKPIs();renderRecentTable();renderTypeBars();if(activeSection==='tracking')renderTable();if(activeSection==='agents')renderAgentTable();if(activeSection==='trends')renderTrends();updateBadge();}
-function updateKPIs(){
-  const net=breaches.filter(b=>b.excluded==='No').length;
-  const excl=breaches.filter(b=>b.excluded==='Yes').length;
-  const open=breaches.filter(b=>b.status==='Open').length;
-  const avg=(net/AGENTS.length).toFixed(1);
-  const weeks=[...new Set(breaches.map(b=>b.week))];
-  const wc=weeks.map(w=>breaches.filter(b=>b.week===w&&b.excluded==='No').length);
-  const maxW=weeks[wc.indexOf(Math.max(...wc))]||'—';
-  document.getElementById('kpi-grid').innerHTML=[
-    {l:'Total Breaches',v:net,d:'Net (excl. excluded)',c:''},
-    {l:'Excluded',v:excl,d:'Not counted in SLA',c:'down'},
-    {l:'Open Investigations',v:open,d:open>0?'Needs attention':'All clear',c:open>0?'up':'down'},
-    {l:'Avg per Agent',v:avg,d:`Across ${AGENTS.length} agents`,c:''},
-    {l:'Peak Week',v:`W${maxW}`,d:`${Math.max(...wc,0)} breaches`,c:''},
-    {l:'Total Logged',v:breaches.length,d:'Including excluded',c:''},
-  ].map(k=>`<div class="kpi-card"><div class="kpi-label">${k.l}</div><div class="kpi-value">${k.v}</div><div class="kpi-delta ${k.c}">${k.d}</div></div>`).join('');
-}
-function updateBadge(){const o=breaches.filter(b=>b.status==='Open').length;const b=document.getElementById('open-badge');b.textContent=o;b.style.display=o>0?'':'none';}
-function renderRecentTable(){
-  const r=[...breaches].sort((a,b)=>b.id-a.id).slice(0,8);
-  document.getElementById('recent-tbody').innerHTML=r.map(b=>`<tr class="${b.excluded==='Yes'?'row-excluded':''}"><td><span class="ticket-id">${b.ticket}</span></td><td>${b.agent}</td><td>${tb(b.type)}</td><td>${sb(b.status)}</td><td style="color:var(--color-text-muted)">W${b.week}</td></tr>`).join('');
-}
-function renderTypeBars(){
-  const c={};TYPES.forEach(t=>c[t]=0);breaches.filter(b=>b.excluded==='No').forEach(b=>{if(c[b.type]!==undefined)c[b.type]++;});
-  const tot=Object.values(c).reduce((a,v)=>a+v,0)||1;
-  const col={'KSL-4':'var(--color-error)','KM-1':'var(--color-warning)','KM-2':'var(--color-gold)',PCa:'var(--color-primary)',PCm:'var(--color-text-muted)'};
-  document.getElementById('type-bars').innerHTML=TYPES.map(t=>{
-    const p=Math.round((c[t]/tot)*100);const cl=col[t]||'var(--color-primary)';
-    return `<div class="bar-row"><span class="bar-label">${t}</span><div class="bar-track"><div class="bar-fill" style="width:${p}%;background:${cl}"></div></div><span class="bar-count" style="color:${cl}">${c[t]}</span></div>`;
-  }).join('');
-}
-function renderTable(){
-  const q=document.getElementById('search-input').value.toLowerCase();
-  const ft=document.getElementById('filter-type').value;
-  const fs=document.getElementById('filter-status').value;
-  const fa=document.getElementById('filter-agent').value;
-  let f=breaches.filter(b=>{
-    return (!q||b.ticket.toLowerCase().includes(q)||b.agent.toLowerCase().includes(q)||b.reason.toLowerCase().includes(q))&&(!ft||b.type===ft)&&(!fs||b.status===fs)&&(!fa||b.agent===fa);
-  });
-  f.sort((a,b)=>{let va=a[sortField]||'',vb=b[sortField]||'';if(sortField==='week'){va=+a.week;vb=+b.week;}return va<vb?-sortDir:va>vb?sortDir:0;});
-  const tot=f.length,start=(currentPage-1)*PAGE_SIZE,pg=f.slice(start,start+PAGE_SIZE);
-  document.getElementById('row-count').textContent=`${tot} breach${tot!==1?'es':''}`;
-  document.getElementById('page-info').textContent=`Showing ${start+1}–${Math.min(start+PAGE_SIZE,tot)} of ${tot}`;
-  document.getElementById('btn-prev').disabled=currentPage===1;
-  document.getElementById('btn-next').disabled=start+PAGE_SIZE>=tot;
-  document.getElementById('main-tbody').innerHTML=pg.length?pg.map(b=>`
-    <tr class="${b.excluded==='Yes'?'row-excluded':''}">
-      <td style="color:var(--color-text-muted)">W${b.week}</td>
-      <td><span class="ticket-id">${b.ticket}</span></td>
-      <td>${b.agent}</td><td>${tb(b.type)}</td>
-      <td style="color:var(--color-text-muted)">${b.dateClosed||'—'}</td>
-      <td>${sb(b.status)}</td>
-      <td style="text-align:center">${b.excluded==='Yes'?'<span style="color:var(--color-notification);font-weight:700">Y</span>':'<span style="color:var(--color-text-faint)">N</span>'}</td>
-      <td><span class="reason-cell" title="${b.reason.replace(/"/g,"'")}">${b.reason}</span></td>
-      <td><button class="btn btn-ghost" style="padding:2px 10px;font-size:.6rem" onclick="del(${b.id})">Remove</button></td>
-    </tr>`).join(''):`<tr><td colspan="9"><div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="8" y1="12" x2="16" y2="12"/></svg><h3>No breaches found</h3><p>Try adjusting filters or log a new breach.</p></div></td></tr>`;
-}
-function renderAgentTable(){
-  const rows=AGENTS.map(agent=>{
-    const c={};TYPES.forEach(t=>c[t]=breaches.filter(b=>b.agent===agent&&b.type===t&&b.excluded==='No').length);
-    const tot=Object.values(c).reduce((a,v)=>a+v,0);
-    const ex=breaches.filter(b=>b.agent===agent&&b.excluded==='Yes').length;
-    return {agent,c,tot,ex};
-  });
-  const mx=Math.max(...rows.map(r=>r.tot),1);
-  document.getElementById('agent-tbody').innerHTML=rows.map(r=>`<tr><td class="summary-name">${r.agent}</td>${TYPES.map(t=>`<td>${hc(r.c[t])}</td>`).join('')}<td>${hc(r.tot,mx)}</td><td style="text-align:center;color:var(--color-text-muted)">${r.ex||'—'}</td></tr>`).join('')
-  +`<tr style="background:var(--color-surface-offset);font-weight:700"><td>TOTALS</td>${TYPES.map(t=>`<td style="text-align:center">${breaches.filter(b=>b.type===t&&b.excluded==='No').length}</td>`).join('')}<td style="text-align:center">${breaches.filter(b=>b.excluded==='No').length}</td><td style="text-align:center">${breaches.filter(b=>b.excluded==='Yes').length}</td></tr>`;
-}
-function hc(v){const l=v===0?0:v<=2?1:v<=4?2:v<=6?3:4;return `<div class="heat-cell heat-${l}">${v}</div>`;}
-function renderTrends(){
-  const wd={};for(let w=1;w<=16;w++)wd[w]={net:0,ex:0};
-  breaches.forEach(b=>{if(b.week<=16){if(b.excluded==='No')wd[b.week].net++;else wd[b.week].ex++;}});
-  const mx=Math.max(...Object.values(wd).map(d=>d.net),1);
-  document.getElementById('week-chart').innerHTML=Object.entries(wd).map(([w,d])=>`
-    <div class="week-bar-group" title="W${w}: ${d.net} breach${d.net!==1?'es':''}${d.ex>0?' (+'+d.ex+' excl.)':''}">
-      <div class="week-bar" style="height:${Math.max((d.net/mx)*100,2)}%"></div>
-      <span class="week-label">${w}</span>
-    </div>`).join('');
-  const ns=Object.values(wd).map(d=>d.net);
-  const pw=Object.keys(wd)[ns.indexOf(Math.max(...ns))];
-  document.getElementById('peak-week').textContent=`Week ${pw} (${Math.max(...ns)} breaches)`;
-  document.getElementById('avg-week').textContent=(ns.reduce((a,c)=>a+c,0)/(ns.filter(v=>v>0).length||1)).toFixed(1);
-  document.getElementById('weeks-logged').textContent=ns.filter(v=>v>0).length;
-}
-function tb(t){const m={'KSL-4':'badge-ksl4','KM-1':'badge-km1','KM-2':'badge-km2',PCa:'badge-pca',PCm:'badge-pcm'};return `<span class="badge ${m[t]||''}">${t}</span>`;}
-function sb(s){const m={Closed:'badge-closed',Open:'badge-open',Excluded:'badge-excluded'};return `<span class="badge ${m[s]||''}">${s}</span>`;}
-function sortBy(f){if(sortField===f)sortDir*=-1;else{sortField=f;sortDir=1;}currentPage=1;renderTable();}
-function changePage(d){currentPage+=d;renderTable();}
-function openModal(){document.getElementById('modal-overlay').classList.add('open');document.getElementById('f-ticket').focus();}
-function closeModal(){document.getElementById('modal-overlay').classList.remove('open');['f-week','f-ticket','f-agent','f-type','f-date','f-jira','f-reason'].forEach(id=>document.getElementById(id).value='');document.getElementById('f-status').value='Open';document.getElementById('f-excluded').value='No';document.getElementById('form-error').style.display='none';}
-function closeModalOutside(e){if(e.target===document.getElementById('modal-overlay'))closeModal();}
-function submitBreach(){
-  const week=+document.getElementById('f-week').value,ticket=document.getElementById('f-ticket').value.trim();
-  const agent=document.getElementById('f-agent').value,type=document.getElementById('f-type').value;
-  const status=document.getElementById('f-status').value,date=document.getElementById('f-date').value;
-  const excluded=document.getElementById('f-excluded').value,reason=document.getElementById('f-reason').value.trim();
-  const jira=document.getElementById('f-jira').value.trim();
-  const err=document.getElementById('form-error');
-  if(!week||!ticket||!agent||!type||!reason){err.textContent='Please fill in all required fields.';err.style.display='block';return;}
-  if(!/^INC\d{7}$/.test(ticket)){err.textContent='Ticket must be INC followed by 7 digits (e.g. INC0123456).';err.style.display='block';return;}
-  if(breaches.find(b=>b.ticket===ticket)){err.textContent=`Ticket ${ticket} already exists.`;err.style.display='block';return;}
-  let fd='';if(date){const[y,m,d]=date.split('-');fd=`${d}/${m}/${y}`;}
-  breaches.unshift({id:nextId++,week,ticket,agent,type,dateClosed:fd,status,excluded,reason,jira});
-  closeModal();if(activeSection==='tracking')currentPage=1;renderAll();
-}
-function del(id){if(!confirm('Remove this breach entry?'))return;breaches=breaches.filter(b=>b.id!==id);renderAll();}
-function exportCSV(){
-  const h=['Week','Ticket','Agent','Type','Date Closed','Status','Excluded','Reason','Jira'];
-  const r=breaches.map(b=>[b.week,b.ticket,b.agent,b.type,b.dateClosed,b.status,b.excluded,`"${b.reason.replace(/"/g,"''")}"`,b.jira]);
-  const csv=[h,...r].map(row=>row.join(',')).join('\n');
-  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='Breaches_2026.csv';a.click();
-}
-function initTheme(){
-  const t=document.querySelector('[data-theme-toggle]'),r=document.documentElement;
-  let d=r.getAttribute('data-theme')||'dark';
-  setIcon(t,d);
-  t&&t.addEventListener('click',()=>{d=d==='dark'?'light':'dark';r.setAttribute('data-theme',d);setIcon(t,d);});
-}
-function setIcon(t,d){if(!t)return;t.innerHTML=d==='dark'?'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>':'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';}
-document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();if(e.key==='n'&&document.activeElement.tagName!=='INPUT'&&document.activeElement.tagName!=='TEXTAREA'&&document.activeElement.tagName!=='SELECT')openModal();});
-init();
-</script>
-</body>
-</html>
+ws1.row_dimensions[1].height = 22
+
+# Create BreachTable (rows 1 to 1001 = 1000 data rows capacity)
+tab = Table(displayName="BreachTable", ref="A1:J1001")
+tab.tableStyleInfo = TableStyleInfo(
+    name="TableStyleMedium2", showFirstColumn=False,
+    showLastColumn=False, showRowStripes=True, showColumnStripes=False)
+ws1.add_table(tab)
+
+# Data validation — Week (1–52)
+dv_week = DataValidation(type="whole", operator="between",
+                         formula1="1", formula2="52",
+                         showErrorMessage=True,
+                         errorTitle="Invalid Week",
+                         error="Enter a week number between 1 and 52.")
+dv_week.sqref = "A2:A1001"
+ws1.add_data_validation(dv_week)
+
+# Data validation — Agent dropdown
+agent_list = ",".join(AGENTS)
+dv_agent = DataValidation(type="list",
+                          formula1='"' + ",".join(AGENTS) + '"',
+                          showErrorMessage=True,
+                          errorTitle="Invalid Agent",
+                          error="Select an agent from the list.")
+dv_agent.sqref = "D2:D1001"
+ws1.add_data_validation(dv_agent)
+
+# Data validation — Type dropdown
+dv_type = DataValidation(type="list",
+                         formula1='"KSL-4,KM-1,KM-2,PCa,PCm"',
+                         showErrorMessage=True,
+                         errorTitle="Invalid Type",
+                         error="Select a valid breach type.")
+dv_type.sqref = "E2:E1001"
+ws1.add_data_validation(dv_type)
+
+# Data validation — Status dropdown
+dv_status = DataValidation(type="list",
+                           formula1='"Open,Closed,Excluded"',
+                           showErrorMessage=True)
+dv_status.sqref = "G2:G1001"
+ws1.add_data_validation(dv_status)
+
+# Data validation — Excluded dropdown
+dv_excl = DataValidation(type="list",
+                         formula1='"Yes,No"',
+                         showErrorMessage=True)
+dv_excl.sqref = "H2:H1001"
+ws1.add_data_validation(dv_excl)
+
+# Conditional formatting — Status colours (rows 2–1001)
+# Open  → light red
+ws1.conditional_formatting.add(
+    "A2:J1001",
+    FormulaRule(formula=['$G2="Open"'],
+                fill=fill("FFE6E6"), font=Font(name="Calibri", size=11)))
+# Closed → light green
+ws1.conditional_formatting.add(
+    "A2:J1001",
+    FormulaRule(formula=['$G2="Closed"'],
+                fill=fill("E6F4EA"), font=Font(name="Calibri", size=11)))
+# Excluded → grey + strikethrough
+ws1.conditional_formatting.add(
+    "A2:J1001",
+    FormulaRule(formula=['$H2="Yes"'],
+                fill=fill("E0E0E0"),
+                font=Font(name="Calibri", size=11, strike=True, color="888888")))
+
+# ════════════════════════════════════════════════════════════════════════════
+# SHEET 2 — Summary
+# ════════════════════════════════════════════════════════════════════════════
+ws2 = wb.create_sheet("Summary")
+ws2.sheet_view.showGridLines = False
+ws2.sheet_properties.tabColor = "4472C4"
+
+def style_title(ws, row, col, text, merge_to_col, bg=C_DARK_BLUE, size=14):
+    cell = ws.cell(row=row, column=col, value=text)
+    cell.fill = fill(bg)
+    cell.font = bold_font(size, C_WHITE)
+    cell.alignment = center()
+    cell.border = thin_border()
+    ws.merge_cells(start_row=row, start_column=col,
+                   end_row=row, end_column=merge_to_col)
+    ws.row_dimensions[row].height = 26
+
+def style_sub_title(ws, row, col, text, merge_to_col, bg=C_MED_BLUE):
+    cell = ws.cell(row=row, column=col, value=text)
+    cell.fill = fill(bg)
+    cell.font = bold_font(12, C_WHITE)
+    cell.alignment = center()
+    ws.merge_cells(start_row=row, start_column=col,
+                   end_row=row, end_column=merge_to_col)
+    ws.row_dimensions[row].height = 22
+
+# ── Section 1: Key Metrics ──────────────────────────────────────────────────
+style_title(ws2, 1, 1, "BREACH TRACKING — KEY METRICS 2026", 6)
+
+metrics = [
+    ("Total Breaches",  "=COUNTA(Breaches!B2:B1001)"),
+    ("Excluded",        "=COUNTIF(Breaches!H2:H1001,\"Yes\")"),
+    ("Net Breaches",    "=COUNTA(Breaches!B2:B1001)-COUNTIF(Breaches!H2:H1001,\"Yes\")"),
+    ("Open",            "=COUNTIF(Breaches!G2:G1001,\"Open\")"),
+    ("Closed",          "=COUNTIF(Breaches!G2:G1001,\"Closed\")"),
+    ("Jira Tickets",    "=COUNTA(Breaches!J2:J1001)"),
+]
+
+for ci, (label, formula) in enumerate(metrics, 1):
+    ws2.column_dimensions[get_column_letter(ci)].width = 18
+    lc = ws2.cell(row=2, column=ci, value=label)
+    lc.fill = fill(C_MED_BLUE); lc.font = bold_font(10, C_WHITE)
+    lc.alignment = center(); lc.border = thin_border()
+    vc = ws2.cell(row=3, column=ci, value=formula)
+    vc.fill = fill(C_LIGHT_BLUE); vc.font = bold_font(18, C_DARK_BLUE)
+    vc.alignment = center(); vc.border = thick_border()
+    ws2.row_dimensions[2].height = 20
+    ws2.row_dimensions[3].height = 40
+
+# ── Section 2: Breach Type Breakdown ───────────────────────────────────────
+style_sub_title(ws2, 5, 1, "BREACH TYPE BREAKDOWN", 4, C_MED_BLUE)
+ws2.cell(row=6, column=1, value="Breach Type").font = bold_font(10, C_WHITE)
+ws2.cell(row=6, column=1).fill = fill(C_MED_BLUE); ws2.cell(row=6, column=1).alignment = center()
+ws2.cell(row=6, column=2, value="Net Count").font = bold_font(10, C_WHITE)
+ws2.cell(row=6, column=2).fill = fill(C_MED_BLUE); ws2.cell(row=6, column=2).alignment = center()
+ws2.cell(row=6, column=3, value="Excl Count").font = bold_font(10, C_WHITE)
+ws2.cell(row=6, column=3).fill = fill(C_MED_BLUE); ws2.cell(row=6, column=3).alignment = center()
+ws2.cell(row=6, column=4, value="% of Total").font = bold_font(10, C_WHITE)
+ws2.cell(row=6, column=4).fill = fill(C_MED_BLUE); ws2.cell(row=6, column=4).alignment = center()
+
+for ri, t in enumerate(TYPES, 7):
+    ws2.cell(row=ri, column=1, value=t).alignment = center()
+    ws2.cell(row=ri, column=2,
+             value=f'=COUNTIFS(Breaches!E$2:E$1001,A{ri},Breaches!H$2:H$1001,"No")')
+    ws2.cell(row=ri, column=3,
+             value=f'=COUNTIFS(Breaches!E$2:E$1001,A{ri},Breaches!H$2:H$1001,"Yes")')
+    ws2.cell(row=ri, column=4,
+             value=f'=IF($B$3=0,"—",B{ri}/$B$3)')
+    ws2.cell(row=ri, column=4).number_format = "0%"
+    for ci in range(1, 5):
+        ws2.cell(row=ri, column=ci).border = thin_border()
+        ws2.cell(row=ri, column=ci).alignment = center()
+
+# Totals row
+tr = 7 + len(TYPES)
+ws2.cell(row=tr, column=1, value="TOTAL").font = bold_font(10)
+ws2.cell(row=tr, column=2, value=f"=SUM(B7:B{tr-1})").font = bold_font(10)
+ws2.cell(row=tr, column=3, value=f"=SUM(C7:C{tr-1})").font = bold_font(10)
+ws2.cell(row=tr, column=4, value='=IF($B$3=0,"—",100%)')
+for ci in range(1, 5):
+    ws2.cell(row=tr, column=ci).fill = fill(C_LIGHT_BLUE)
+    ws2.cell(row=tr, column=ci).border = thin_border()
+    ws2.cell(row=tr, column=ci).alignment = center()
+
+# ── Section 3: Weekly Trend ─────────────────────────────────────────────────
+style_sub_title(ws2, tr+2, 1, "WEEKLY BREACH TREND", 4, C_MED_BLUE)
+ws2.cell(row=tr+3, column=1, value="Week").font = bold_font(10, C_WHITE)
+ws2.cell(row=tr+3, column=1).fill = fill(C_MED_BLUE); ws2.cell(row=tr+3, column=1).alignment = center()
+ws2.cell(row=tr+3, column=2, value="Net Breaches").font = bold_font(10, C_WHITE)
+ws2.cell(row=tr+3, column=2).fill = fill(C_MED_BLUE); ws2.cell(row=tr+3, column=2).alignment = center()
+ws2.cell(row=tr+3, column=3, value="Excluded").font = bold_font(10, C_WHITE)
+ws2.cell(row=tr+3, column=3).fill = fill(C_MED_BLUE); ws2.cell(row=tr+3, column=3).alignment = center()
+
+trend_start = tr + 4
+for w in range(1, 53):
+    r = trend_start + w - 1
+    ws2.cell(row=r, column=1, value=w).alignment = center()
+    ws2.cell(row=r, column=2,
+             value=f'=COUNTIFS(Breaches!A$2:A$1001,A{r},Breaches!H$2:H$1001,"No")')
+    ws2.cell(row=r, column=3,
+             value=f'=COUNTIFS(Breaches!A$2:A$1001,A{r},Breaches!H$2:H$1001,"Yes")')
+    for ci in range(1, 4):
+        ws2.cell(row=r, column=ci).border = thin_border()
+        ws2.cell(row=r, column=ci).alignment = center()
+
+# Line chart
+chart = LineChart()
+chart.title = "Breach Trend 2026"
+chart.style = 10
+chart.y_axis.title = "Breaches"
+chart.x_axis.title = "Week"
+chart.height = 12; chart.width = 20
+
+data_ref = Reference(ws2, min_col=2, max_col=3,
+                     min_row=tr+3, max_row=trend_start+51)
+cats_ref = Reference(ws2, min_col=1,
+                     min_row=trend_start, max_row=trend_start+51)
+chart.add_data(data_ref, titles_from_data=True)
+chart.set_categories(cats_ref)
+chart.series[0].graphicalProperties.line.solidFill = "4472C4"
+chart.series[1].graphicalProperties.line.solidFill = "ED7D31"
+ws2.add_chart(chart, f"E{tr+3}")
+
+# ════════════════════════════════════════════════════════════════════════════
+# SHEET 3 — Agent Summary
+# ════════════════════════════════════════════════════════════════════════════
+ws3 = wb.create_sheet("Agent Summary")
+ws3.sheet_view.showGridLines = False
+ws3.sheet_properties.tabColor = "70AD47"
+ws3.freeze_panes = "B2"
+
+style_title(ws3, 1, 1, "AGENT SUMMARY — NET BREACHES 2026", 8)
+
+# Headers
+ag_headers = ["Agent"] + TYPES + ["Total", "Excluded"]
+ag_col_w   = [24, 10, 10, 10, 10, 10, 10, 12]
+for ci, (h, w) in enumerate(zip(ag_headers, ag_col_w), 1):
+    c = ws3.cell(row=2, column=ci, value=h)
+    c.fill = fill(C_MED_BLUE); c.font = bold_font(10, C_WHITE)
+    c.alignment = center(); c.border = thin_border()
+    ws3.column_dimensions[get_column_letter(ci)].width = w
+ws3.row_dimensions[2].height = 22
+
+# Agent rows
+for ri, agent in enumerate(AGENTS, 3):
+    ws3.cell(row=ri, column=1, value=agent).font = reg_font(10)
+    ws3.cell(row=ri, column=1).alignment = left()
+    ws3.cell(row=ri, column=1).border = thin_border()
+    for ti, btype in enumerate(TYPES, 2):
+        formula = (f'=COUNTIFS(Breaches!D$2:D$1001,A{ri},'
+                   f'Breaches!E$2:E$1001,"{btype}",'
+                   f'Breaches!H$2:H$1001,"No")')
+        c = ws3.cell(row=ri, column=ti, value=formula)
+        c.alignment = center(); c.border = thin_border()
+    # Total
+    tc = ws3.cell(row=ri, column=7,
+                  value=f"=SUM(B{ri}:F{ri})")
+    tc.alignment = center(); tc.border = thin_border(); tc.font = bold_font(10)
+    # Excluded
+    ec = ws3.cell(row=ri, column=8,
+                  value=f'=COUNTIFS(Breaches!D$2:D$1001,A{ri},Breaches!H$2:H$1001,"Yes")')
+    ec.alignment = center(); ec.border = thin_border()
+
+# Totals row
+last_agent_row = 2 + len(AGENTS)
+tr3 = last_agent_row + 1
+ws3.cell(row=tr3, column=1, value="TOTALS").font = bold_font(10)
+for ci in range(1, 9):
+    c = ws3.cell(row=tr3, column=ci)
+    c.fill = fill(C_LIGHT_BLUE); c.border = thin_border(); c.alignment = center()
+for ci in range(2, 7):
+    ws3.cell(row=tr3, column=ci,
+             value=f"=SUM({get_column_letter(ci)}3:{get_column_letter(ci)}{last_agent_row})").font = bold_font(10)
+ws3.cell(row=tr3, column=8,
+         value=f"=SUM(H3:H{last_agent_row})").font = bold_font(10)
+
+# Conditional formatting on breach counts B3:G(last_agent_row)
+range_str = f"B3:G{last_agent_row}"
+ws3.conditional_formatting.add(range_str,
+    CellIsRule(operator="equal", formula=["0"],
+               fill=fill(C_GREEN_OK)))
+ws3.conditional_formatting.add(range_str,
+    CellIsRule(operator="between", formula=["1","2"],
+               fill=fill(C_YELLOW_W)))
+ws3.conditional_formatting.add(range_str,
+    CellIsRule(operator="between", formula=["3","5"],
+               fill=fill(C_ORANGE_W)))
+ws3.conditional_formatting.add(range_str,
+    CellIsRule(operator="greaterThan", formula=["5"],
+               fill=fill(C_RED_W),
+               font=Font(name="Calibri", size=10, bold=True, color=C_WHITE)))
+
+# ════════════════════════════════════════════════════════════════════════════
+# SHEET 4 — Instructions
+# ════════════════════════════════════════════════════════════════════════════
+ws4 = wb.create_sheet("Instructions")
+ws4.sheet_view.showGridLines = False
+ws4.sheet_properties.tabColor = "FFC000"
+ws4.column_dimensions["A"].width = 20
+ws4.column_dimensions["B"].width = 70
+
+style_title(ws4, 1, 1, "BREACH TRACKER 2026 — QUICK REFERENCE GUIDE", 2)
+
+instructions = [
+    ("", ""),
+    ("WHAT IS THIS FILE?", ""),
+    ("", "The Breaches sheet is the single data source. It syncs with the BreachTrack web app. "
+         "Sheets Summary and Agent Summary auto-calculate from it — do not edit formulas."),
+    ("", ""),
+    ("COLUMN GUIDE", ""),
+    ("Week",        "Calendar week (1–52). Select from dropdown."),
+    ("Ticket",      "ServiceNow incident ID. Format: INC + 7 digits. Example: INC0123456"),
+    ("URL",         "Optional. Paste the full ServiceNow ticket URL for a clickable hyperlink in the app."),
+    ("Agent",       "Select from dropdown. Use 'Not Agent Related' for excluded/system tickets."),
+    ("Type",        "KSL-4 = Wrong Routing | KM-1 = Reopen | KM-2 = Response Time | PCa = Priority Auto | PCm = Priority Manual"),
+    ("DateClosed",  "Format DD/MM/YYYY. Leave blank if Status = Open."),
+    ("Status",      "Open / Closed / Excluded. Row colour changes automatically."),
+    ("Excluded?",   "Yes = does NOT count in SLA metrics. Must provide reason. No = counts."),
+    ("Reason",      "Required always. Max 500 characters. Be specific."),
+    ("Jira",        "Optional. Enter Jira ticket ID (e.g. JIRA-12345). Appears in app Jira page."),
+    ("", ""),
+    ("COLOUR CODES", ""),
+    ("Green row",   "Status = Closed"),
+    ("Red row",     "Status = Open"),
+    ("Grey row",    "Excluded = Yes (strikethrough)"),
+    ("", ""),
+    ("RULES", ""),
+    ("",            "✗ Never delete rows — mark as Excluded instead"),
+    ("",            "✗ Never edit Column D (BMS ID) — auto-calculated"),
+    ("",            "✓ Always save (Ctrl+S) after adding entries"),
+    ("",            "✓ If Excluded = Yes, write a detailed reason"),
+    ("",            "✓ Check for duplicate tickets with Ctrl+F before adding"),
+    ("", ""),
+    ("PASSWORDS",   "Sheet protection password: Breaches2026"),
+    ("", ""),
+    ("SYNC WITH APP",""),
+    ("",            "The web app (BreachTrack) reads and writes this Excel file via Microsoft Graph API."),
+    ("",            "New breaches logged in the app appear here automatically."),
+    ("",            "Changes made directly in Excel are picked up on the next app refresh."),
+    ("",            "Do NOT rename sheets, the table (BreachTable), or column headers."),
+]
+
+for ri, (label, text) in enumerate(instructions, 2):
+    lc = ws4.cell(row=ri, column=1, value=label)
+    tc = ws4.cell(row=ri, column=2, value=text)
+    if label and label == label.upper() and text == "":
+        lc.font = bold_font(10, C_DARK_BLUE)
+        lc.fill = fill(C_LIGHT_BLUE)
+        ws4.merge_cells(start_row=ri, start_column=1, end_row=ri, end_column=2)
+        lc.alignment = left()
+    elif label:
+        lc.font = bold_font(10)
+        lc.alignment = left()
+        tc.font = reg_font(10)
+        tc.alignment = left()
+    else:
+        tc.font = reg_font(10, "555555")
+        tc.alignment = left()
+    ws4.row_dimensions[ri].height = 16
+
+ws4.row_dimensions[1].height = 28
+
+# ════════════════════════════════════════════════════════════════════════════
+# SAVE
+# ════════════════════════════════════════════════════════════════════════════
+out_path = "output/Breaches2026.xlsx"
+wb.save(out_path)
+print(f"Excel file saved ✅  →  {out_path}")
+print(f"Sheets: {[s.title for s in wb.worksheets]}")
